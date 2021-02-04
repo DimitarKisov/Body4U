@@ -10,7 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="SendGrid" Version="9.22.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Body4U.Common\Body4U.Common.csproj" />
     <ProjectReference Include="..\..\Data\Body4U.Data.Models\Body4U.Data.Models.csproj" />
+    <ProjectReference Include="..\..\Data\Body4U.Data\Body4U.Data.csproj" />
+    <ProjectReference Include="..\..\Web\Body4U.Web.ViewModels\Body4U.Web.ViewModels.csproj" />
   </ItemGroup>
 
 </Project>

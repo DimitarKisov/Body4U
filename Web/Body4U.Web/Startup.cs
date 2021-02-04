@@ -4,6 +4,8 @@
     using Body4U.Data;
     using Body4U.Data.Models;
     using Body4U.Data.Seeding;
+    using Body4U.Services.Data.Contracts;
+    using Body4U.Services.Data.Services;
     using Body4U.Services.Messaging;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -51,7 +53,8 @@
             services.AddSingleton(this.configuration);
 
             // Application services
-            services.AddTransient<IEmailSender, NullMessageSender>();
+            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IEmailSender>(x => new SendGridEmailSender(configuration.GetSection("SendGrid")["ApiKey"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

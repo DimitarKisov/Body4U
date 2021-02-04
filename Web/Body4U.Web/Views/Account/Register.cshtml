@@ -1,0 +1,55 @@
+﻿@model Body4U.Web.ViewModels.Account.RegisterRequest
+
+@using Body4U.Data.Models.Enums;
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Register" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Email">Email address</label>
+        <input type="email" name="Email" asp-for="Email" class="form-control" id="emailInput" aria-describedby="emailHelp" placeholder="Email address" data-val-required="Email полето е задължително.">
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="FirstName">Име</label>
+        <input name="FirstName" asp-for="FirstName" class="form-control" id="firstNameInput" placeholder="Име" data-val-required="Името е задължително.">
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="LastName">Фамилия</label>
+        <input name="LastName" asp-for="LastName" class="form-control" id="lastNameInput" placeholder="Фамилия" data-val-required="Фамилията е задължителна.">
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Age">Години</label>
+        <input name="Age" asp-for="LastName" class="form-control" id="ageInput" placeholder="Години">
+        <span asp-validation-for="Age" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PhoneNumber">Години</label>
+        <input name="PhoneNumber" asp-for="PhoneNumber" class="form-control" id="phoneNumberInput" placeholder="Телефонен номер">
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ProfilePicture">Профилна снимка</label>
+        <input type="file" name="ProfilePicture" asp-for="ProfilePicture" class="form-control" id="profilePictureInput">
+        <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Gender">Пол</label>
+        <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()">
+            <option selected="selected" value="">Избери</option>
+        </select>
+        <span asp-validation-for="Gender" class="text-danger" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Password">Парола</label>
+        <input type="password" name="Password" asp-for="Password" class="form-control" id="passwordInput" placeholder="Парола" data-val-required="Паролата е задължителна.">
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ConfirmPassword">Повторете паролата</label>
+        <input type="password" name="ConfirmPassword" asp-for="ConfirmPassword" class="form-control" placeholder="ConfirmPassword">
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Регистрация</button>
+</form>
