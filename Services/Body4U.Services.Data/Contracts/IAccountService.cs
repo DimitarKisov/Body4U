@@ -11,6 +11,8 @@
 
         Task<bool> Login(LoginRequest model);
 
+        Task<bool> ChangePassword(ChangePasswordRequest model, ApplicationUser user);
+
         Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink);
     }
 }

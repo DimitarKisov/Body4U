@@ -113,7 +113,35 @@
 
             return RedirectToAction("Index", "Home");
         }
-        
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await userManager.GetUserAsync(User);
+
+            var result = await accountService.ChangePassword(model, user);
+
+            if (result == false)
+            {
+                return View(model);
+            }
+
+            return RedirectToAction("MyProfile", "Account");
+        }
+
         public async Task<IActionResult> VerifyEmail(string userId, string token)
         {
             var user = await userManager.FindByIdAsync(userId);

@@ -98,6 +98,19 @@
             return false;
         }
 
+        public async Task<bool> ChangePassword(ChangePasswordRequest model, ApplicationUser user)
+        {
+            var result = await userManager.ChangePasswordAsync(user,
+                model.OldPassword, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                await signInManager.RefreshSignInAsync(user);
+                return true;
+            }
+
+            return false;
+        }
 
         public async Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink)
         {
