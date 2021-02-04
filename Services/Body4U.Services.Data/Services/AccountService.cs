@@ -86,6 +86,19 @@
             
         }
 
+        public async Task<bool> Login(LoginRequest model)
+        {
+            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+            if (result.Succeeded)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
         public async Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink)
         {
             var apiKey = configuration.GetSection("SendGrid")["ApiKey"];

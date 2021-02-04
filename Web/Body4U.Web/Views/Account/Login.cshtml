@@ -1,0 +1,25 @@
+﻿@model Body4U.Web.ViewModels.Account.LoginRequest
+
+@{
+    var returnUrl = Context.Request.Query["returnurl"];
+}
+
+<form enctype="multipart/form-data" method="post" asp-controller="Account" asp-action="Login" asp-route-returnurl="@returnUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" type="email" name="Email" class="form-control" id="emailInput" aria-describedby="emailHelp">
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Парола</label>
+        <input asp-for="Password" type="password" name="Password" class="form-control" id="passwordInput" autocomplete="off">
+    </div>
+    <div>
+        <a asp-controller="Account" asp-action="ForgotPassword">Забравена парола?</a>
+    </div>
+    <div class="mb-3 form-check">
+        <input asp-for="RememberMe" type="checkbox" name="RememberMe" class="form-check-input" id="checkBox">
+        <label class="form-check-label" asp-for="RememberMe">Запомни ме</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Вход</button>
+</form>

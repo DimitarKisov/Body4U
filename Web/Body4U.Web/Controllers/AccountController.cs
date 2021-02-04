@@ -4,6 +4,7 @@
     using Body4U.Data.Models;
     using Body4U.Services.Data.Contracts;
     using Body4U.Web.ViewModels.Account;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
@@ -68,6 +69,51 @@
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginRequest model, string returnUrl = null)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+
+                if (user != null && !user.EmailConfirmed && (await userManager.CheckPasswordAsync(user, model.Password)))
+                {
+                    ModelState.AddModelError(string.Empty, GlobalConstants.PleaseConfirmEmail);
+                    return View(model);
+                }
+
+                var result = await accountService.Login(model);
+
+                if (result)
+                {
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+
+                    return RedirectToAction("Index", "Home");
+                }
+
+                ModelState.AddModelError(string.Empty, "Невалиден email или парола.");
+            }
+
+            return View(model);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+
+            return RedirectToAction("Index", "Home");
+        }
+        
         public async Task<IActionResult> VerifyEmail(string userId, string token)
         {
             var user = await userManager.FindByIdAsync(userId);

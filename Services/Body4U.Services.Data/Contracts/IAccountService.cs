@@ -9,6 +9,8 @@
     {
         Task<ResponseData<ApplicationUser>> Register(RegisterRequest model);
 
+        Task<bool> Login(LoginRequest model);
+
         Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink);
     }
 }
