@@ -123,5 +123,17 @@
             var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
             return await client.SendEmailAsync(msg);
         }
+
+        public async Task<SendGrid.Response> SendEmailResetPassword(string email, string passwordResetLink)
+        {
+            var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
+            var subject = "Password Reset";
+            var to = new EmailAddress(email);
+            var htmlContent = $"<p>За да подновите, моля кликлнете <a href=\"{passwordResetLink}\">ТУК</a></p>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
+            return await client.SendEmailAsync(msg);
+        }
     }
 }
