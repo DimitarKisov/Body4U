@@ -13,6 +13,8 @@
 
         Task<bool> ChangePassword(ChangePasswordRequest model, ApplicationUser user);
 
+        MyProfileViewModel MyProfile(ApplicationUser user);
+
         Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink);
 
         Task<SendGrid.Response> SendEmailResetPassword(string email, string passwordResetLink);

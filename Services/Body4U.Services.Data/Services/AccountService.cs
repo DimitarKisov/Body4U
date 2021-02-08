@@ -3,6 +3,7 @@
     using Body4U.Common;
     using Body4U.Data;
     using Body4U.Data.Models;
+    using Body4U.Data.Models.Enums;
     using Body4U.Data.Models.Helper;
     using Body4U.Services.Data.Contracts;
     using Body4U.Web.ViewModels.Account;
@@ -96,6 +97,20 @@
             }
 
             return false;
+        }
+
+        public MyProfileViewModel MyProfile(ApplicationUser user)
+        {
+            return new MyProfileViewModel()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                ProfilePicture = user.ProfilePicture != null ? Convert.ToBase64String(user.ProfilePicture) : null,
+                Name = user.FullName,
+                Age = user.Age,
+                PhoneNumber = user.PhoneNumber,
+                Sex = ((Gender)user.Sex).ToString()
+            };
         }
 
         public async Task<bool> ChangePassword(ChangePasswordRequest model, ApplicationUser user)

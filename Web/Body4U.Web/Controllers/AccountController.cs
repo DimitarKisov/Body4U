@@ -213,6 +213,21 @@
             return View(model);
         }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> MyProfile()
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User);
+            if (user != null)
+            {
+                var result = accountService.MyProfile(user);
+
+                return View(result);
+            }
+
+            return RedirectToAction("Login", "Account");
+        }
+
         public async Task<IActionResult> VerifyEmail(string userId, string token)
         {
             var user = await userManager.FindByIdAsync(userId);
