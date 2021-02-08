@@ -14,6 +14,7 @@
         public const string InvalidPasswordResetToken = "Невалиден email или reset token.";
         public const string UnssuccesfulPasswordReset = "Неуспешно подновяване";
 
+        public const string NotFound = "Търсената от Вас страница не може да бъде намерена.";
         public const string Wrong = "Нещо се обърка. Моля опитайте пак!";
     }
 }

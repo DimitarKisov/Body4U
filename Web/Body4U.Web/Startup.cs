@@ -78,7 +78,8 @@
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Home");
+                app.UseStatusCodePagesWithReExecute("/Home/{0}");
                 app.UseHsts();
             }
 
