@@ -15,6 +15,10 @@
 
         MyProfileViewModel MyProfile(ApplicationUser user);
 
+        EditMyProfileViewModel EditMyProfile(ApplicationUser loggedInUser);
+
+        Task<ResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser);
+
         Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink);
 
         Task<SendGrid.Response> SendEmailResetPassword(string email, string passwordResetLink);

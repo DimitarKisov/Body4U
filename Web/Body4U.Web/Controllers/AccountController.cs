@@ -213,11 +213,11 @@
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> MyProfile()
         {
-            var user = await userManager.GetUserAsync(HttpContext.User);
+            var user = await userManager.GetUserAsync(User);
             if (user != null)
             {
                 var result = accountService.MyProfile(user);
@@ -226,6 +226,42 @@
             }
 
             return RedirectToAction("Login", "Account");
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Edit()
+        {
+            var loggedInUser = await userManager.GetUserAsync(User);
+            var result = accountService.EditMyProfile(loggedInUser);
+
+            return View(result);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Edit(EditMyProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var loggedInUser = await userManager.GetUserAsync(User);
+            var result = await accountService.EditMyProfile(model, loggedInUser);
+
+            if (result.IsValid)
+            {
+                return RedirectToAction("MyProfile", "Account");
+            }
+            else if (result.Error.Message == GlobalConstants.WrongImageFormat)
+            {
+                ModelState.AddModelError(string.Empty, GlobalConstants.WrongImageFormat);
+                return View(model);
+            }
+
+            ModelState.AddModelError(string.Empty, GlobalConstants.Wrong);
+            return View(model);
         }
 
         public async Task<IActionResult> VerifyEmail(string userId, string token)

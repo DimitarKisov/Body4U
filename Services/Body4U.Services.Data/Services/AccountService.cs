@@ -106,11 +106,63 @@
                 Id = user.Id,
                 Email = user.Email,
                 ProfilePicture = user.ProfilePicture != null ? Convert.ToBase64String(user.ProfilePicture) : null,
-                Name = user.FullName,
+                FullName = user.FullName,
                 Age = user.Age,
                 PhoneNumber = user.PhoneNumber,
                 Sex = ((Gender)user.Sex).ToString()
             };
+        }
+
+        public EditMyProfileViewModel EditMyProfile(ApplicationUser loggedInUser)
+        {
+            return new EditMyProfileViewModel()
+            {
+                Id = loggedInUser.Id,
+                FirstName = loggedInUser.FirstName,
+                LastName = loggedInUser.LastName,
+                Age = loggedInUser.Age,
+                PhoneNumber = loggedInUser.PhoneNumber
+            };
+        }
+
+        public async Task<ResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser)
+        {
+            try
+            {
+                if (model.ProfilePicture != null && model.ProfilePicture.ContentType != "image/jpeg" && model.ProfilePicture.ContentType != "image/png" && model.ProfilePicture.ContentType != "image/jpg")
+                {
+                    return ResponseData<bool>.BadResponse(GlobalConstants.WrongImageFormat);
+                }
+
+                loggedInUser.FirstName = model.FirstName;
+                loggedInUser.LastName = model.LastName;
+                loggedInUser.Age = model.Age;
+                loggedInUser.PhoneNumber = model.PhoneNumber;
+
+                if (model.ProfilePicture != null)
+                {
+                    if (model.ProfilePicture.Length > 0)
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            await model.ProfilePicture.CopyToAsync(stream);
+
+                            if (loggedInUser.ProfilePicture != stream.ToArray())
+                            {
+                                loggedInUser.ProfilePicture = stream.ToArray();
+                            }
+                        }
+                    }
+                }
+
+                dbContext.SaveChanges();
+
+                return ResponseData<bool>.CorrectResponse(true);
+            }
+            catch (Exception)
+            {
+                return ResponseData<bool>.BadResponse(GlobalConstants.Wrong);
+            }
         }
 
         public async Task<bool> ChangePassword(ChangePasswordRequest model, ApplicationUser user)

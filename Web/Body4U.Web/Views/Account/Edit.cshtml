@@ -1,14 +1,10 @@
-﻿@model Body4U.Web.ViewModels.Account.RegisterRequest
+﻿@model Body4U.Web.ViewModels.Account.EditMyProfileViewModel
 
 @using Body4U.Data.Models.Enums;
 
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<form asp-action="Register" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label asp-for="Email">Email address</label>
-        <input type="email" name="Email" asp-for="Email" class="form-control" id="emailInput" aria-describedby="emailHelp" placeholder="Email address" data-val-required="Email полето е задължително.">
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <input hidden asp-for="Id" />
     <div class="form-group">
         <label for="FirstName">Име</label>
         <input name="FirstName" asp-for="FirstName" class="form-control" id="firstNameInput" placeholder="Име" data-val-required="Името е задължително.">
@@ -21,11 +17,11 @@
     </div>
     <div class="form-group">
         <label asp-for="Age">Години</label>
-        <input name="Age" asp-for="LastName" class="form-control" id="ageInput" placeholder="Години">
+        <input name="Age" asp-for="Age" class="form-control" id="ageInput" placeholder="Години">
         <span asp-validation-for="Age" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="PhoneNumber">Години</label>
+        <label asp-for="PhoneNumber">Телефонен номер</label>
         <input name="PhoneNumber" asp-for="PhoneNumber" class="form-control" id="phoneNumberInput" placeholder="Телефонен номер">
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
@@ -41,15 +37,5 @@
         </select>
         <span asp-validation-for="Gender" class="text-danger" />
     </div>
-    <div class="form-group">
-        <label asp-for="Password">Парола</label>
-        <input type="password" name="Password" asp-for="Password" class="form-control" id="passwordInput" placeholder="Парола" data-val-required="Паролата е задължителна." autocomplete="off">
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ConfirmPassword">Повторете паролата</label>
-        <input type="password" name="ConfirmPassword" asp-for="ConfirmPassword" class="form-control" placeholder="ConfirmPassword" autocomplete="off">
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Регистрация</button>
+    <button type="submit" class="btn btn-primary">Обнови</button>
 </form>

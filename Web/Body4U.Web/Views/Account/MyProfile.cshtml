@@ -1,3 +1,29 @@
-﻿@model Body4U.Web.ViewModels.Account.MyProfileViewModel
+﻿@{
+    Layout = "~/Views/Shared/_MyProfileLayout.cshtml";
+}
 
-<h1>ok</h1>
+@model Body4U.Web.ViewModels.Account.MyProfileViewModel
+
+
+
+<div class="card mb-3" style="max-width: 540px;">
+    <div class="row g-0">
+        <div class="col-md-4">
+            @if (Model.ProfilePicture == null)
+            {
+                <img src="~/images/default_Profile_Picture.jpg" class="img-fluid" alt="...">
+            }
+            else
+            {
+                <img src="data:image;base64,@Model.ProfilePicture" class="card-img-top" alt="Профилна снимка">
+            }
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">@Model.FullName</h5>
+                <p class="card-text">@Model.Email</p>
+                <p class="card-text"><small class="text-muted">@Model.PhoneNumber</small></p>
+            </div>
+        </div>
+    </div>
+</div>
