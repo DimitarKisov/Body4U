@@ -10,10 +10,10 @@
     {
         public ApplicationUser()
         {
-            this.Id = Guid.NewGuid().ToString();
-            this.Roles = new HashSet<IdentityUserRole<string>>();
-            this.Claims = new HashSet<IdentityUserClaim<string>>();
-            this.Logins = new HashSet<IdentityUserLogin<string>>();
+            Id = Guid.NewGuid().ToString();
+            Roles = new HashSet<IdentityUserRole<string>>();
+            Claims = new HashSet<IdentityUserClaim<string>>();
+            Logins = new HashSet<IdentityUserLogin<string>>();
         }
 
         [Required]
@@ -24,7 +24,7 @@
         [MinLength(3), MaxLength(50)]
         public string LastName { get; set; }
 
-        public string FullName => this.FirstName + " " + this.LastName;
+        public string FullName => FirstName + " " + LastName;
 
         [Range(5, 100, ErrorMessage = "Въведете валидни години.")]
         public int? Age { get; set; }
@@ -37,6 +37,8 @@
         public DateTime CreatedOn { get; set; } = DateTime.Now;
 
         public bool IsDisabled { get; set; }
+
+        public virtual Trainer Trainer { get; set; }
 
         public virtual ICollection<IdentityUserRole<string>> Roles { get; set; }
 

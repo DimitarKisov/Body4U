@@ -5,6 +5,7 @@
         public const string SystemName = "Body4U";
         public const string AdministratorRoleName = "Administrator";
         public const string UserRoleName = "User";
+        public const string TrainerRoleName = "Trainer";
 
 
         //Messages

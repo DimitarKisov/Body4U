@@ -12,6 +12,12 @@
         {
         }
 
+        public DbSet<Trainer> Trainers { get; set; }
+
+        public DbSet<TrainerImage> TrainerImages { get; set; }
+
+        public DbSet<TrainerVideo> TrainerVideos { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // Needed for Identity models configuration
@@ -29,6 +35,26 @@
             {
                 entity.ToTable(name: "IdentityRoles");
             });
+            #endregion
+
+            #region Таблици
+            builder.Entity<Trainer>()
+                .HasOne(t => t.ApplicationUser)
+                .WithOne(a => a.Trainer)
+                .HasForeignKey<Trainer>(t => t.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TrainerImage>()
+                .HasOne(ti => ti.Trainer)
+                .WithMany(t => t.TrainerImages)
+                .HasForeignKey(ti => ti.TrainerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TrainerVideo>()
+                .HasOne(ti => ti.Trainer)
+                .WithMany(t => t.TrainerVideos)
+                .HasForeignKey(ti => ti.TrainerId)
+                .OnDelete(DeleteBehavior.Cascade);
             #endregion
         }
 
