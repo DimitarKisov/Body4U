@@ -1,0 +1,36 @@
+﻿@model cloudscribe.Pagination.Models.PagedResult<Body4U.Web.Areas.Administration.ViewModels.GetAllUsersViewModel>
+
+@{
+    ViewData["Controller"] = "Dashboard";
+    ViewData["Action"] = "GetAllUsers";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-bordered table-hover" style="border-color:black; border:2px solid">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Име</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Data)
+                    {
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@user.Email</td>
+                            <td>
+                                <a type="button" class="btn btn-danger" href="#" @*asp-area="Administration" asp-controller="Dashboard" asp-action="DeleteUser" asp-route-id="@user.Id"*@ onclick="return confirm('Сигурни ли сте, че искате, да изтриете този потребител?');"><i class="far fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <partial name="_PaginationPartialUsersWithRoles" model="Model" />
+        </div>
+    </div>
+</div>

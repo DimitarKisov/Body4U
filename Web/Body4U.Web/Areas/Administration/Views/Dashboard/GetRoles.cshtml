@@ -1,0 +1,27 @@
+﻿@model List<Body4U.Data.Models.ApplicationRole>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-bordered table-hover" style="border-color:black; border:2px solid">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Име</th>
+                        <th scope="col">Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var role in Model)
+                    {
+                        <tr>
+                            <td>@role.Name</td>
+                            <td>
+                                <a type="button" class="btn btn-success" asp-area="Administration" asp-controller="Dashboard" asp-action="UsersInRole" asp-route-id="@role.Id"><i class="fas fa-edit"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

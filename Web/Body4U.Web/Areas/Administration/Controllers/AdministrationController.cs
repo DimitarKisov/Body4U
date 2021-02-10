@@ -2,7 +2,6 @@
 {
     using Body4U.Common;
     using Body4U.Web.Controllers;
-
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 

@@ -1,0 +1,33 @@
+﻿@model List<Body4U.Web.Areas.Administration.ViewModels.EditUsersInRoleViewModel>
+
+@*@{
+    var roleId = ViewBag.roleId;
+}*@
+
+<div class="container">
+    <form method="post">
+        <div class="card">
+            <div class="card-header">
+                <h2>Добави или премахни потребители от тази роля</h2>
+            </div>
+            <div class="card-body">
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <div class="form-check m-1">
+                        <input type="hidden" asp-for="@Model[i].UserId" />
+                        <input type="hidden" asp-for="@Model[i].UserName" />
+                        <input asp-for="@Model[i].IsSelected" class="form-check-input" />
+                        <label class="form-check-label" asp-for="@Model[i].IsSelected">
+                            @Model[i].UserName
+                        </label>
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <input type="submit" value="Обнови" class="btn btn-primary"
+                       style="width:auto" />
+                <a asp-action="GetRoles" class="btn btn-primary" style="width:auto">Отказ</a>
+            </div>
+        </div>
+    </form>
+</div>
