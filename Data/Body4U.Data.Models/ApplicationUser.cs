@@ -14,6 +14,7 @@
             Roles = new HashSet<IdentityUserRole<string>>();
             Claims = new HashSet<IdentityUserClaim<string>>();
             Logins = new HashSet<IdentityUserLogin<string>>();
+            Articles = new HashSet<Article>();
         }
 
         [Required]
@@ -45,5 +46,7 @@
         public virtual ICollection<IdentityUserClaim<string>> Claims { get; set; }
 
         public virtual ICollection<IdentityUserLogin<string>> Logins { get; set; }
+
+        public virtual ICollection<Article> Articles { get; set; }
     }
 }

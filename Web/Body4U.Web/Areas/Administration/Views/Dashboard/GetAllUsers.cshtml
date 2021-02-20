@@ -23,13 +23,12 @@
                             <td>@user.Name</td>
                             <td>@user.Email</td>
                             <td>
-                                <a type="button" class="btn btn-danger" href="#" @*asp-area="Administration" asp-controller="Dashboard" asp-action="DeleteUser" asp-route-id="@user.Id"*@ onclick="return confirm('Сигурни ли сте, че искате, да изтриете този потребител?');"><i class="far fa-trash-alt"></i></a>
+                                <a type="button" class="btn btn-danger" href="#" @*asp-area="Administration" asp-controller="Dashboard" asp-action="DeleteUser" asp-route-id="@user.Id"*@ onclick="return confirm('Сигурни ли сте, че искате, да изтриете този потребител?');"><i class="bi bi-trash"></i></a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-
             <partial name="_PaginationPartialUsersWithRoles" model="Model" />
         </div>
     </div>

@@ -18,6 +18,8 @@
 
         public DbSet<TrainerVideo> TrainerVideos { get; set; }
 
+        public DbSet<Article> Articles { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // Needed for Identity models configuration
@@ -55,6 +57,12 @@
                 .WithMany(t => t.TrainerVideos)
                 .HasForeignKey(ti => ti.TrainerId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Article>()
+                .HasOne(a => a.ApplicationUser)
+                .WithMany(au => au.Articles)
+                .HasForeignKey(a => a.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Restrict);
             #endregion
         }
 
