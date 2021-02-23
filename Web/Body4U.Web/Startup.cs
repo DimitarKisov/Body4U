@@ -41,6 +41,8 @@
                         options.MinimumSameSitePolicy = SameSiteMode.None;
                     });
 
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
             services.AddControllersWithViews(
                 options =>
                     {
@@ -54,6 +56,7 @@
 
             // Application services
             services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IArticleService, ArticleService>();
             services.AddTransient<IEmailSender>(x => new SendGridEmailSender(configuration.GetSection("SendGrid")["ApiKey"]));
         }
 

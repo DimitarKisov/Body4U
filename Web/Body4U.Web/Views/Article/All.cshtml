@@ -1,0 +1,46 @@
+﻿@using Body4U.Web.ViewModels.Article
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@*@inject IViewLocalizer Localizer*@
+@inject Body4U.Data.ApplicationDbContext DbContext
+
+@model cloudscribe.Pagination.Models.PagedResult<GetAllArticlesViewModel>
+
+@{
+    ViewData["Controller"] = "Article";
+    ViewData["Action"] = "All";
+    //var authors = new List<Body4U.Web.ViewModels.Article.AllArticlesAuthorInfoModel>();
+    //authors.AddRange(DbContext.Trainers.Select(x => new Body4U.Web.ViewModels.Article.AllArticlesAuthorInfoModel { AuthorId = x.ApplicationUserId, FullName = x.ApplicationUser.FullName }));
+    //authors.AddRange(DbContext.Creators.Select(x => new Body4U.Web.ViewModels.Article.AllArticlesAuthorInfoModel { AuthorId = x.ApplicationUserId, FullName = x.ApplicationUser.FullName }));
+}
+
+<div class="container">
+    <div class="row">
+        @if (Model.Data.Count() > 0)
+        {
+            @foreach (var article in Model.Data)
+            {
+                <div class="card mb-3" style="max-width: 540px; margin-right:30px">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="data:image;base64,@article.Image" alt="" style="width:171px; height:300px; object-fit:cover">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@article.Title</h5>
+                                <p class="card-text">@article.SubstringedContent</p>
+                                <p class="card-text"><small>Автор: @article.AuthorFullName</small></p>
+                                <p class="card-text"><small>Дата: @article.DatePostedToView</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <h1>Все още няма статии.</h1>
+        }
+        <partial name="_PaginationPartial" , view-data="ViewData" , model="Model" />
+    </div>
+</div>
