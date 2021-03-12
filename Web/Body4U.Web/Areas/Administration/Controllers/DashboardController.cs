@@ -1,5 +1,6 @@
 ﻿namespace Body4U.Web.Areas.Administration.Controllers
 {
+    using Body4U.Common;
     using Body4U.Data;
     using Body4U.Data.Models;
     using Body4U.Web.Areas.Administration.ViewModels;
@@ -149,11 +150,25 @@
                 {
                     //Го добавяме
                     result = await userManager.AddToRoleAsync(user, role.Name);
+                    if (role.Name == GlobalConstants.TrainerRoleName)
+                    {
+                        var trainer = new Trainer
+                        {
+                            ApplicationUserId = user.Id
+                        };
 
+                        dbContext.Trainers.Add(trainer);
+                    }
                 }
                 //Ако не е селектиран и е в тази роля...
                 else if (!model[i].IsSelected && await userManager.IsInRoleAsync(user, role.Name))
                 {
+                    if (role.Name == GlobalConstants.TrainerRoleName)
+                    {
+                        var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == user.Id);
+                        dbContext.Trainers.Remove(trainer);
+                    }
+
                     //и премахваме от ролята
                     result = await userManager.RemoveFromRoleAsync(user, role.Name);
                 }
@@ -170,11 +185,13 @@
                     }
                     else
                     {
+                        dbContext.SaveChanges();
                         return RedirectToAction("UsersInRole", new { Id = roleId });
                     }
                 }
             }
 
+            dbContext.SaveChanges();
             return RedirectToAction("UsersInRole", new { Id = roleId });
         }
     }

@@ -70,7 +70,7 @@
 
                 if (!dbContext.Users.Any())
                 {
-                    new ApplicationDbContextSeeder(this.configuration).SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
+                    new ApplicationDbContextSeeder(configuration).SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
                 }
             }
 

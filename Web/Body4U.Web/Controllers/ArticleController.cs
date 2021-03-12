@@ -1,6 +1,8 @@
 ﻿namespace Body4U.Web.Controllers
 {
+    using Body4U.Common;
     using Body4U.Data.Models;
+    using Body4U.Data.Models.Helper;
     using Body4U.Services.Data.Contracts;
     using Body4U.Web.ViewModels.Article;
     using Microsoft.AspNetCore.Authorization;
@@ -58,6 +60,36 @@
             }
 
             return RedirectToAction("HttpError", "Home");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get(int id)
+        {
+            ResponseData<GetArticleResponse> result = null;
+            var currentlyLoggedInUser = await userManager.GetUserAsync(this.User);
+
+            if (currentlyLoggedInUser == null)
+            {
+                result = articleService.Get(id);
+            }
+            else
+            {
+                result = articleService.Get(id, currentlyLoggedInUser);
+            }
+
+            if (!result.IsValid)
+            {
+                if (result.Error.Message == GlobalConstants.ArticleIdMissing)
+                {
+                    return View("NotFound", "Home");
+                }
+                else if (result.Error.Message == GlobalConstants.Wrong)
+                {
+                    return View("Error", "Home");
+                }
+            }
+
+            return View(result.Data);
         }
     }
 }

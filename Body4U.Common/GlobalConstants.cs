@@ -21,6 +21,7 @@
         public const string ArticleTitleExsists = "Вече съществува статия с такова заглавие.";
         public const string NotReadyToWriteArticle = "Моля попълнете нужната информация за Вас, за да можете, да създадете статия.";
         public const string WrongImageWidthHeight = "Моля въведете снимка с размери минимум 180x250.";
+        public const string ArticleIdMissing = "Не съществува статия с такъв номер.";
         #endregion
 
         #region Common

@@ -25,7 +25,7 @@
             // Needed for Identity models configuration
             base.OnModelCreating(builder);
 
-            this.ConfigureUserIdentityRelations(builder);
+            ConfigureUserIdentityRelations(builder);
 
             #region Смяна на имена на таблици
             builder.Entity<ApplicationUser>(entity =>
