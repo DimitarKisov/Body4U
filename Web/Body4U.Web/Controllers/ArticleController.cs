@@ -59,7 +59,7 @@
                 return View(result);
             }
 
-            return RedirectToAction("HttpError", "Home");
+            return View("HttpError");
         }
 
         [HttpGet]
@@ -85,7 +85,7 @@
                 }
                 else if (result.Error.Message == GlobalConstants.Wrong)
                 {
-                    return View("Error");
+                    return View("HttpError");
                 }
             }
 
