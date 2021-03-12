@@ -81,11 +81,11 @@
             {
                 if (result.Error.Message == GlobalConstants.ArticleIdMissing)
                 {
-                    return View("NotFound", "Home");
+                    return View("NotFound");
                 }
                 else if (result.Error.Message == GlobalConstants.Wrong)
                 {
-                    return View("Error", "Home");
+                    return View("Error");
                 }
             }
 
