@@ -14,7 +14,46 @@
     //authors.AddRange(DbContext.Creators.Select(x => new Body4U.Web.ViewModels.Article.AllArticlesAuthorInfoModel { AuthorId = x.ApplicationUserId, FullName = x.ApplicationUser.FullName }));
 }
 
-<div class="container">
+<div class="album py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            @if (Model.Data.Count() > 0)
+            {
+                @foreach (var article in Model.Data)
+                {
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&amp;bg=55595c&amp;fg=eceeef&amp;text=Thumbnail" alt="Thumbnail [100%x225]" style="height: 225px; width: 100%; display: block;" src="data:image;base64,@article.Image" data-holder-rendered="true">
+                            <div class="card-body">
+                                <p class="card-text">@article.Title</p>
+                                <p class="card-text">@article.SubstringedContent</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    @*<div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+        </div>*@
+                                    <a asp-area="" asp-controller="Article" asp-action="Get" asp-route-id="@article.Id">
+                                        <span @*style="color:black"*@ class='text'>
+                                            Прочети повече
+                                        </span>
+                                    </a>
+                                    <small class="text-muted">@article.DatePostedToView</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <h1>Все още няма статии.</h1>
+            }
+            <partial name="_PaginationPartial" , view-data="ViewData" , model="Model" />
+        </div>
+    </div>
+</div>
+
+@*<div class="container">
     <div class="row">
         @if (Model.Data.Count() > 0)
         {
@@ -43,4 +82,4 @@
         }
         <partial name="_PaginationPartial" , view-data="ViewData" , model="Model" />
     </div>
-</div>
+</div>*@

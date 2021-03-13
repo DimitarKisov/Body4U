@@ -18,9 +18,7 @@
 
         public string AuthorFullName { get; set; }
 
-        public DateTime DatePosted { get; set; }
-
-        public string DatePostedToView { get; set; }
+        public string DatePosted { get; set; }
 
         public string MonthNamePosted { get; set; }
 

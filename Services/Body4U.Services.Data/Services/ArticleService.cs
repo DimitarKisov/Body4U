@@ -111,7 +111,7 @@
                     Content = a.Content,
                     Image = Convert.ToBase64String(a.Image),
                     AuthorFullName = a.ApplicationUser.FullName,
-                    DatePostedToView = a.DatePosted.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    DatePosted = a.DatePosted.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     MonthNamePosted = a.DatePosted.ToString("MMM", CultureInfo.InvariantCulture),
                     DateNumberPosted = a.DatePosted.ToString("dd", CultureInfo.InvariantCulture),
                     ArticleType = a.ArticleType.ToString()

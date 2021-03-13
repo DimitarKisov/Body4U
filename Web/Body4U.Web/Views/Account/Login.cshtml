@@ -4,24 +4,21 @@
     var returnUrl = Context.Request.Query["returnurl"];
 }
 
-<div class="container">
-    <form enctype="multipart/form-data" method="post" asp-controller="Account" asp-action="Login" asp-route-returnurl="@returnUrl">
+<div class="text-center">
+    <form class="form-signin" enctype="multipart/form-data" method="post" asp-controller="Account" asp-action="Login" asp-route-returnurl="@returnUrl">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="mb-3">
-            <label asp-for="Email" class="form-label">Email</label>
-            <input asp-for="Email" type="email" name="Email" class="form-control" id="emailInput" aria-describedby="emailHelp">
+        <img class="mb-4" src="~/images/Webp.net-resizeimage.png" alt="" width="85" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        <label asp-for="Email" class="sr-only">Email</label>
+        <input asp-for="Email" type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+        <label asp-for="Password" class="sr-only">Парола</label>
+        <input asp-for="Password" type="password" id="inputPassword" class="form-control" placeholder="Парола" autocomplete="off" required>
+        <div class="checkbox mb-3">
+            <label>
+                <input asp-for="RememberMe" type="checkbox"> Запомни ме
+            </label>
         </div>
-        <div class="mb-3">
-            <label asp-for="Password" class="form-label">Парола</label>
-            <input asp-for="Password" type="password" name="Password" class="form-control" id="passwordInput" autocomplete="off">
-        </div>
-        <div>
-            <a asp-controller="Account" asp-action="ForgotPassword">Забравена парола?</a>
-        </div>
-        <div class="mb-3 form-check">
-            <input asp-for="RememberMe" type="checkbox" name="RememberMe" class="form-check-input" id="checkBox">
-            <label class="form-check-label" asp-for="RememberMe">Запомни ме</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Вход</button>
+        <a asp-controller="Account" asp-action="ForgotPassword">Забравена парола?</a>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Вход</button>
     </form>
 </div>
