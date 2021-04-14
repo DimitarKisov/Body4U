@@ -1,10 +1,11 @@
 ﻿@using Body4U.Web.ViewModels.Article
 @using Microsoft.AspNetCore.Mvc.Localization
 
-@*@inject IViewLocalizer Localizer*@
-@inject Body4U.Data.ApplicationDbContext DbContext
-
 @model cloudscribe.Pagination.Models.PagedResult<GetAllArticlesViewModel>
+
+@inject IViewLocalizer Localizer
+@inject Body4U.Data.ApplicationDbContext DbContext
+@inject IViewLocalizer Localizer
 
 @{
     ViewData["Controller"] = "Article";
@@ -14,72 +15,64 @@
     //authors.AddRange(DbContext.Creators.Select(x => new Body4U.Web.ViewModels.Article.AllArticlesAuthorInfoModel { AuthorId = x.ApplicationUserId, FullName = x.ApplicationUser.FullName }));
 }
 
-<div class="album py-5 bg-light">
+<section class="breadcrumbs">
     <div class="container">
+
+        <ol>
+            <li><a asp-area="" asp-controller="Home" asp-action="Index">Начало</a></li>
+            <li>Статии</li>
+        </ol>
+        <h2>Всички статии</h2>
+    </div>
+</section>
+<section id="blog" class="blog">
+    <div class="container" data-aos="fade-up">
         <div class="row">
-            @if (Model.Data.Count() > 0)
-            {
-                @foreach (var article in Model.Data)
+            <div class="col-lg-10 entries">
+                @if (Model.Data.Count() > 0)
                 {
-                    <div class="col-md-4">
-                        <div class="card mb-4 shadow-sm">
-                            <img class="card-img-top" data-src="holder.js/100px225?theme=thumb&amp;bg=55595c&amp;fg=eceeef&amp;text=Thumbnail" alt="Thumbnail [100%x225]" style="height: 225px; width: 100%; display: block;" src="data:image;base64,@article.Image" data-holder-rendered="true">
-                            <div class="card-body">
-                                <p class="card-text">@article.Title</p>
-                                <p class="card-text">@article.SubstringedContent</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    @*<div class="btn-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-        </div>*@
-                                    <a asp-area="" asp-controller="Article" asp-action="Get" asp-route-id="@article.Id">
-                                        <span @*style="color:black"*@ class='text'>
-                                            Прочети повече
-                                        </span>
-                                    </a>
-                                    <small class="text-muted">@article.DatePostedToView</small>
+                    @foreach (var article in Model.Data)
+                    {
+                        <article class="entry">
+                            <div class="entry-img">
+                                <img src="data:image;base64,@article.Image" alt="" class="img-fluid" style="flex-shrink:0; min-width:100%; min-height:100%;">
+                            </div>
+                            <h2 class="entry-title">
+                                <a asp-area="" asp-controller="Article" asp-action="Get" asp-route-id="@article.Id">@article.Title</a>
+                            </h2>
+                            <div class="entry-meta">
+                                <ul>
+                                    <li class="d-flex align-items-center"><i class="icofont-user"></i>@article.AuthorFullName @*<a href="blog-single.html">John Doe</a>*@</li>
+                                    <li class="d-flex align-items-center"><i class="icofont-wall-clock"></i> @article.DatePosted</li>
+                                    <li class="d-flex align-items-center"><i class="icofont-comment"></i>@Localizer[$"{article.ArticleType}"]</li>
+                                </ul>
+                            </div>
+                            <div class="entry-content" style="word-wrap:break-word">
+                                <p>
+                                    @article.SubstringedContent
+                                </p>
+                                <div class="read-more">
+                                    <a asp-area="" asp-controller="Article" asp-action="Get" asp-route-id="@article.Id">Прочети повече</a>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </article>
+                    }
                 }
-            }
-            else
-            {
-                <h1>Все още няма статии.</h1>
-            }
-            <partial name="_PaginationPartial" , view-data="ViewData" , model="Model" />
+                else
+                {
+                    <h1>Все още няма статии.</h1>
+                }
+                <div class="blog-pagination">
+                    <ul class="justify-content-center">
+                        @*<li class="disabled"><i class="icofont-rounded-left"></i></li>
+                            <li><a href="#">1</a></li>
+                            <li class="active"><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#"><i class="icofont-rounded-right"></i></a></li>*@
+                        <partial name="_PaginationPartial" , view-data="ViewData" , model="Model" />
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-
-@*<div class="container">
-    <div class="row">
-        @if (Model.Data.Count() > 0)
-        {
-            @foreach (var article in Model.Data)
-            {
-                <div class="card mb-3" style="max-width: 540px; margin-right:30px">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img src="data:image;base64,@article.Image" alt="" style="width:171px; height:300px; object-fit:cover">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">@article.Title</h5>
-                                <p class="card-text">@article.SubstringedContent</p>
-                                <p class="card-text"><small>Автор: @article.AuthorFullName</small></p>
-                                <p class="card-text"><small>Дата: @article.DatePostedToView</small></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <h1>Все още няма статии.</h1>
-        }
-        <partial name="_PaginationPartial" , view-data="ViewData" , model="Model" />
-    </div>
-</div>*@
+</section>

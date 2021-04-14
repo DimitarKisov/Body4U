@@ -1,5 +1,6 @@
 ﻿namespace Body4U.Web
 {
+    using System;
     using System.Linq;
     using Body4U.Data;
     using Body4U.Data.Models;
@@ -10,7 +11,10 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -29,30 +33,53 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
+                options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
-                .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddRoles<ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.Configure<CookiePolicyOptions>(
                 options =>
-                    {
-                        options.CheckConsentNeeded = context => true;
-                        options.MinimumSameSitePolicy = SameSiteMode.None;
-                    });
+                {
+                    options.CheckConsentNeeded = context => true;
+                    options.MinimumSameSitePolicy = SameSiteMode.None;
+                });
+
+            services.ConfigureApplicationCookie(
+                options =>
+                {
+                    // Cookie settings
+                    options.Cookie.HttpOnly = true;
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                    options.LoginPath = "/Account/Login";
+                    //options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                    //options.AccessDeniedPath = "/Home/HttpError";
+                    options.SlidingExpiration = true;
+                });
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             services.AddControllersWithViews(
                 options =>
-                    {
-                        options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-                    }).AddRazorRuntimeCompilation();
+                {
+                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+                })
+                .AddRazorRuntimeCompilation()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+            services.AddAntiforgery(
+                options =>
+                {
+                    options.HeaderName = "X-CSRF-TOKEN";
+                });
 
             services.AddRazorPages();
+            services.AddCloudscribePagination();
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddSingleton(this.configuration);
+            services.AddSingleton(configuration);
 
             // Application services
             services.AddTransient<IAccountService, AccountService>();
@@ -85,6 +112,11 @@
                 app.UseStatusCodePagesWithReExecute("/Home/{0}");
                 app.UseHsts();
             }
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("bg-BG")
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

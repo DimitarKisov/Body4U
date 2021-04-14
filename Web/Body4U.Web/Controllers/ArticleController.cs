@@ -81,10 +81,12 @@
             {
                 if (result.Error.Message == GlobalConstants.ArticleIdMissing)
                 {
+                    ViewBag.ErrorMessage = result.Error.Message;
                     return View("NotFound");
                 }
                 else if (result.Error.Message == GlobalConstants.Wrong)
                 {
+                    ViewBag.ErrorMessage = result.Error.Message;
                     return View("HttpError");
                 }
             }
