@@ -1,15 +1,16 @@
-﻿using Ganss.XSS;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Body4U.Web.ViewModels.Article
+﻿namespace Body4U.Web.ViewModels.Article
 {
+    using Ganss.XSS;
+    using System.Collections.Generic;
+
     public class GetArticleResponse
     {
+        private HtmlSanitizer sanitizer;
         public GetArticleResponse()
         {
             RecentArticles = new List<GetRecentArticlesViewModel>();
+            sanitizer = new HtmlSanitizer();
+            sanitizer.AllowedTags.Add("iframe");
         }
         public int Id { get; set; }
 
@@ -17,7 +18,7 @@ namespace Body4U.Web.ViewModels.Article
 
         public string Content { get; set; }
 
-        public string ContentToView => new HtmlSanitizer().Sanitize(Content);
+        public string ContentToView => sanitizer.Sanitize(Content);
 
         public string Image { get; set; }
 

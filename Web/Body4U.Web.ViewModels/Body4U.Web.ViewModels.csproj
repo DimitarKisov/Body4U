@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="cloudscribe.Web.Pagination" Version="2.1.11" />
     <PackageReference Include="HtmlSanitizer" Version="5.0.376" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.2" />
   </ItemGroup>

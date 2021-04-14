@@ -31,7 +31,7 @@
             get
             {
                 var content = WebUtility.HtmlDecode(Regex.Replace(Content, @"<[^>]+>", string.Empty));
-                return content.Length > 150 ? content.Substring(0, 150) + "..." : content;
+                return content.Length > 200 ? content.Substring(0, 200) + "..." : content;
             }
         }
     }

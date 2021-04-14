@@ -16,6 +16,7 @@
         public IFormFile Image { get; set; }
 
         [Required(ErrorMessage = "Съдържанието е задължнително!")]
+        [MinLength(700)]
         public string Content { get; set; }
 
         [Required]

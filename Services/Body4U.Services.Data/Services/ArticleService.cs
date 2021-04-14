@@ -66,10 +66,10 @@
                             model.Image.CopyTo(memoryStream);
                             using (var img = Image.FromStream(memoryStream))
                             {
-                                if (img.Width < 180 || img.Height < 250)
-                                {
-                                    return ResponseData<Article>.BadResponse(GlobalConstants.WrongImageWidthHeight);
-                                }
+                                //if (img.Width < 730 || img.Height < 548)
+                                //{
+                                //    return ResponseData<Article>.BadResponse(GlobalConstants.WrongImageWidthHeight);
+                                //}
 
                                 using (var ms = new MemoryStream())
                                 {
@@ -148,7 +148,7 @@
 
                 var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == article.ApplicationUserId);
 
-                var articles = dbContext.Articles.ToList();
+                var articles = dbContext.Articles.AsQueryable();
                 
                 var result = new GetArticleResponse
                 {
@@ -184,19 +184,18 @@
                 }
                 result.ArticleTypesCount = dic;
 
-                var articlesCount = articles.Count() > 4 ? articles.Count() : 4;
-                var recentArticles = articles
-                    .Select(x => new GetRecentArticlesViewModel
-                    {
-                        Id = x.Id,
-                        Image = Convert.ToBase64String(x.Image),
-                        Title = x.Title,
-                        DatePosted = x.DatePosted.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)
-                    })
-                    .Take(articlesCount)
-                    .ToList();
+                //var articlesCount = articles.Count() > 4 ? 4 : articles.Count();
+                //var recentArticles = articles
+                //    .Select(x => new GetRecentArticlesViewModel
+                //    {
+                //        Id = x.Id,
+                //        Image = Convert.ToBase64String(x.Image),
+                //        Title = x.Title,
+                //        DatePosted = x.DatePosted.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                //    })
+                //    .Take(articlesCount);
 
-                result.RecentArticles.AddRange(recentArticles);
+                //result.RecentArticles.AddRange(recentArticles);
 
                 return ResponseData<GetArticleResponse>.CorrectResponse(result);
             }
