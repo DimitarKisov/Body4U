@@ -11,6 +11,7 @@
     using LazZiya.ImageResize;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using System;
     using System.Collections.Generic;
     using System.Drawing;
@@ -23,14 +24,16 @@
     {
         private readonly ApplicationDbContext dbContext;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IConfiguration configuration;
 
-        public ArticleService(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
+        public ArticleService(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             this.dbContext = dbContext;
             this.userManager = userManager;
+            this.configuration = configuration;
         }
 
-        public async Task<ResponseData<Article>> Create(CreateArticleRequest model, ApplicationUser user)
+        public async Task<GlobalResponseData<Article>> Create(CreateArticleRequest model, ApplicationUser user)
         {
             try
             {
@@ -41,11 +44,11 @@
 
                     if (dbContext.Articles.Any(x => x.Title == model.Title))
                     {
-                        return ResponseData<Article>.BadResponse(GlobalConstants.ArticleTitleExsists);
+                        return GlobalResponseData<Article>.BadResponse(GlobalConstants.ArticleTitleExsists);
                     }
                     if (model.Image.ContentType != "image/jpeg" && model.Image.ContentType != "image/png")
                     {
-                        return ResponseData<Article>.BadResponse(GlobalConstants.WrongImageFormat);
+                        return GlobalResponseData<Article>.BadResponse(GlobalConstants.WrongImageFormat);
                     }
 
                     var article = new Article()
@@ -83,16 +86,16 @@
                     dbContext.Articles.Add(article);
                     dbContext.SaveChanges();
 
-                    return ResponseData<Article>.CorrectResponse(article);
+                    return GlobalResponseData<Article>.CorrectResponse(article);
                 }
                 else
                 {
-                    return ResponseData<Article>.BadResponse(GlobalConstants.NotReadyToWriteArticle);
+                    return GlobalResponseData<Article>.BadResponse(GlobalConstants.NotReadyToWriteArticle);
                 }
             }
             catch (Exception)
             {
-                return ResponseData<Article>.BadResponse(GlobalConstants.Wrong);
+                return GlobalResponseData<Article>.BadResponse(GlobalConstants.Wrong);
             }
         }
 
@@ -136,14 +139,14 @@
             }
         }
 
-        public ResponseData<GetArticleResponse> Get(int id, ApplicationUser currentlyLoggedInUser = null)
+        public GlobalResponseData<GetArticleResponse> Get(int id, ApplicationUser currentlyLoggedInUser = null)
         {
             try
             {
                 var article = dbContext.Articles.Include(x => x.ApplicationUser).FirstOrDefault(x => x.Id == id);
                 if (article == null)
                 {
-                    return ResponseData<GetArticleResponse>.BadResponse(GlobalConstants.ArticleIdMissing);
+                    return GlobalResponseData<GetArticleResponse>.BadResponse(GlobalConstants.ArticleMissing);
                 }
 
                 var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == article.ApplicationUserId);
@@ -197,11 +200,108 @@
 
                 //result.RecentArticles.AddRange(recentArticles);
 
-                return ResponseData<GetArticleResponse>.CorrectResponse(result);
+                return GlobalResponseData<GetArticleResponse>.CorrectResponse(result);
             }
             catch (Exception ex)
             {
-                return ResponseData<GetArticleResponse>.BadResponse(GlobalConstants.Wrong);
+                return GlobalResponseData<GetArticleResponse>.BadResponse(GlobalConstants.Wrong);
+            }
+        }
+
+        public async Task<GlobalResponseData<EditArticleViewModel>> Edit(int id, ApplicationUser currentlyLoggedInUser)
+        {
+            try
+            {
+                var article = dbContext.Articles.Find(id);
+
+                if (article == null)
+                {
+                    return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.ArticleMissing);
+                }
+
+                if (article.ApplicationUserId != currentlyLoggedInUser.Id)
+                {
+                    if (!await userManager.IsInRoleAsync(currentlyLoggedInUser, GlobalConstants.AdministratorRoleName) && currentlyLoggedInUser.Email != configuration.GetSection("SeedInfo")["UserName"])
+                    {
+                        //TODO Какво ще се връща ако не е нито треньора, нито администратора (не знам как би станало изобщо тва)
+                        return null;
+                    }
+                }
+
+                var result = new EditArticleViewModel()
+                {
+                    Title = article.Title,
+                    Content = article.Content,
+                    ArticleType = article.ArticleType,
+                    Image = Convert.ToBase64String(article.Image),
+                };
+
+                return GlobalResponseData<EditArticleViewModel>.CorrectResponse(result);
+            }
+            catch (Exception)
+            {
+                return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.Wrong);
+            }
+        }
+
+        public async Task<GlobalResponse> Edit(EditArticleRequestModel model, ApplicationUser currentlyLoggedInUser)
+        {
+            try
+            {
+                var article = dbContext.Articles.Find(model.Id);
+
+                if (article == null)
+                {
+                    return GlobalResponse.BadResponse(GlobalConstants.ArticleMissing);
+                }
+
+                if (article.ApplicationUserId != currentlyLoggedInUser.Id)
+                {
+                    if (!await userManager.IsInRoleAsync(currentlyLoggedInUser, GlobalConstants.AdministratorRoleName) && currentlyLoggedInUser.Email != configuration.GetSection("SeedInfo")["UserName"])
+                    {
+                        //TODO Какво ще се връща ако не е нито треньора, нито администратора (не знам как би станало изобщо тва)
+                        return null;
+                    }
+                }
+
+                if (model.Image.ContentType != "image/jpeg" && model.Image.ContentType != "image/png")
+                {
+                    return GlobalResponseData<Article>.BadResponse(GlobalConstants.WrongImageFormat);
+                }
+
+                article.Title = model.Title.Trim();
+                article.Content = model.Content.Trim();
+                article.ArticleType = model.ArticleType;
+
+                if (model.Image.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        //Отваряме стрийм и записваме съдържанието на снимката в него
+                        model.Image.CopyTo(memoryStream);
+                        using (var img = Image.FromStream(memoryStream))
+                        {
+                            //if (img.Width < 730 || img.Height < 548)
+                            //{
+                            //    return ResponseData<Article>.BadResponse(GlobalConstants.WrongImageWidthHeight);
+                            //}
+
+                            using (var ms = new MemoryStream())
+                            {
+                                img.Save(ms, img.RawFormat);
+                                article.Image = ms.ToArray();
+                            }
+                        }
+                    }
+                }
+
+                dbContext.SaveChanges();
+
+                return GlobalResponse.CorrectResponse();
+            }
+            catch (Exception)
+            {
+                return GlobalResponse.BadResponse(GlobalConstants.Wrong);
             }
         }
     }

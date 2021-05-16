@@ -39,7 +39,7 @@
             this.configuration = configuration;
         }
 
-        public async Task<ResponseData<ApplicationUser>> Register(RegisterRequest model)
+        public async Task<GlobalResponseData<ApplicationUser>> Register(RegisterRequest model)
         {
             try
             {
@@ -56,7 +56,7 @@
 
                 if (model.ProfilePicture != null && model.ProfilePicture.ContentType != "image/jpeg" && model.ProfilePicture.ContentType != "image/png")
                 {
-                    return ResponseData<ApplicationUser>.BadResponse(GlobalConstants.WrongImageFormat);
+                    return GlobalResponseData<ApplicationUser>.BadResponse(GlobalConstants.WrongImageFormat);
                 }
 
                 if (model.ProfilePicture != null)
@@ -75,14 +75,14 @@
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, GlobalConstants.UserRoleName);
-                    return ResponseData<ApplicationUser>.CorrectResponse(user);
+                    return GlobalResponseData<ApplicationUser>.CorrectResponse(user);
                 }
 
-                return ResponseData<ApplicationUser>.BadResponse(GlobalConstants.Wrong);
+                return GlobalResponseData<ApplicationUser>.BadResponse(GlobalConstants.Wrong);
             }
             catch (Exception)
             {
-                return ResponseData<ApplicationUser>.BadResponse(GlobalConstants.Wrong);
+                return GlobalResponseData<ApplicationUser>.BadResponse(GlobalConstants.Wrong);
             }
             
         }
@@ -109,7 +109,7 @@
                 FullName = user.FullName,
                 Age = user.Age,
                 PhoneNumber = user.PhoneNumber,
-                Sex = ((Gender)user.Sex).ToString()
+                Sex = user.Sex.ToString()
             };
         }
 
@@ -125,13 +125,13 @@
             };
         }
 
-        public async Task<ResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser)
+        public async Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser)
         {
             try
             {
                 if (model.ProfilePicture != null && model.ProfilePicture.ContentType != "image/jpeg" && model.ProfilePicture.ContentType != "image/png" && model.ProfilePicture.ContentType != "image/jpg")
                 {
-                    return ResponseData<bool>.BadResponse(GlobalConstants.WrongImageFormat);
+                    return GlobalResponseData<bool>.BadResponse(GlobalConstants.WrongImageFormat);
                 }
 
                 loggedInUser.FirstName = model.FirstName;
@@ -157,11 +157,11 @@
 
                 dbContext.SaveChanges();
 
-                return ResponseData<bool>.CorrectResponse(true);
+                return GlobalResponseData<bool>.CorrectResponse(true);
             }
             catch (Exception)
             {
-                return ResponseData<bool>.BadResponse(GlobalConstants.Wrong);
+                return GlobalResponseData<bool>.BadResponse(GlobalConstants.Wrong);
             }
         }
 

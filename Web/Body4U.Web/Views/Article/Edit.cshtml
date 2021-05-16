@@ -1,0 +1,52 @@
+﻿@model Body4U.Web.ViewModels.Article.EditArticleResponse
+
+@using Body4U.Data.Models.Enums
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label">Заглавие</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Image" class="control-label">Снимка</label>
+                    <input type="file" id="file" asp-for="Image" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Content" class="control-label">Съдържание</label>
+                    <textarea asp-for="Content" class="form-control edit-with-tinymce" style="height: 450px"></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label style="padding:1px" asp-for="ArticleType" class="col-md-2 control-label">Вид статия</label>
+                    <div style="padding:1px" class="col-md-4">
+                        <select asp-for="ArticleType" asp-items="Html.GetEnumSelectList<ArticleType>()">
+                            <option selected="selected" value="">Избери</option>
+                        </select>
+                        <span asp-validation-for="ArticleType" class="text-danger" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Редакция</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/lib/tinymce/tinymce.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    tinymce.init({
+        selector: "textarea.edit-with-tinymce",
+        plugins: [
+            "image paste table link code media"
+        ]
+    });
+</script>

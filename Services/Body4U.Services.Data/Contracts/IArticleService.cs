@@ -8,10 +8,14 @@
 
     public interface IArticleService
     {
-        Task<ResponseData<Article>> Create(CreateArticleRequest model, ApplicationUser user);
+        Task<GlobalResponseData<Article>> Create(CreateArticleRequest model, ApplicationUser user);
 
         PagedResult<GetAllArticlesViewModel> All(int pageNumber, int pageSize);
 
-        ResponseData<GetArticleResponse> Get(int id, ApplicationUser currentlyLoggedInUser = null);
+        GlobalResponseData<GetArticleResponse> Get(int id, ApplicationUser currentlyLoggedInUser = null);
+
+        Task<GlobalResponseData<EditArticleViewModel>> Edit(int id, ApplicationUser currentlyLoggedInUser);
+
+        Task<GlobalResponse> Edit(EditArticleRequestModel model, ApplicationUser currentlyLoggedInUser);
     }
 }

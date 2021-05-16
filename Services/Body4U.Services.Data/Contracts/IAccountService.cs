@@ -7,7 +7,7 @@
 
     public interface IAccountService
     {
-        Task<ResponseData<ApplicationUser>> Register(RegisterRequest model);
+        Task<GlobalResponseData<ApplicationUser>> Register(RegisterRequest model);
 
         Task<bool> Login(LoginRequest model);
 
@@ -17,7 +17,7 @@
 
         EditMyProfileViewModel EditMyProfile(ApplicationUser loggedInUser);
 
-        Task<ResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser);
+        Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser);
 
         Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink);
 

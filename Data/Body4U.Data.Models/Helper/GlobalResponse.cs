@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Body4U.Data.Models.Helper
 {
-    public class Response
+    public class GlobalResponse
     {
-        protected Response(bool isValid, string errorKey = null)
+        protected GlobalResponse(bool isValid, string errorKey = null)
         {
             this.IsValid = isValid;
 
@@ -20,14 +20,14 @@ namespace Body4U.Data.Models.Helper
 
         public ErrorResponse Error { get; set; }
 
-        public static Response BadResponse(string errorKey)
+        public static GlobalResponse BadResponse(string errorKey)
         {
-            return new Response(false, errorKey);
+            return new GlobalResponse(false, errorKey);
         }
 
-        public static Response CorrectResponse()
+        public static GlobalResponse CorrectResponse()
         {
-            return new Response(true);
+            return new GlobalResponse(true);
         }
     }
 }

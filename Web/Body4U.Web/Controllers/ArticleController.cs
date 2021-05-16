@@ -65,7 +65,7 @@
         [HttpGet]
         public async Task<IActionResult> Get(int id)
         {
-            ResponseData<GetArticleResponse> result = null;
+            GlobalResponseData<GetArticleResponse> result = null;
             var currentlyLoggedInUser = await userManager.GetUserAsync(this.User);
 
             if (currentlyLoggedInUser == null)
@@ -79,7 +79,7 @@
 
             if (!result.IsValid)
             {
-                if (result.Error.Message == GlobalConstants.ArticleIdMissing)
+                if (result.Error.Message == GlobalConstants.ArticleMissing)
                 {
                     ViewBag.ErrorMessage = result.Error.Message;
                     return View("NotFound");
@@ -92,6 +92,53 @@
             }
 
             return View(result.Data);
+        }
+
+        [Authorize(Roles = "Administrator, Trainer")]
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var currentlyLoggedInUser = await userManager.GetUserAsync(User);
+            var result = await articleService.Edit(id, currentlyLoggedInUser);
+
+            if (result.Error.Message == GlobalConstants.ArticleMissing)
+            {
+                ViewBag.ErrorMessage = result.Error.Message;
+                return View("NotFound");
+            }
+            else if (result.Error.Message == GlobalConstants.Wrong)
+            {
+                ViewBag.ErrorMessage = result.Error.Message;
+                return View("HttpError");
+            }
+
+            return View(result.Data);
+        }
+
+        [Authorize(Roles = "Administrator, Trainer")]
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditArticleRequestModel model)
+        {
+            var currentlyLoggedInUser = await userManager.GetUserAsync(User);
+            var result = await articleService.Edit(model, currentlyLoggedInUser);
+
+            if (result.Error.Message == GlobalConstants.ArticleMissing)
+            {
+                ViewBag.ErrorMessage = result.Error.Message;
+                return View("NotFound");
+            }
+            else if (result.Error.Message == GlobalConstants.WrongImageFormat)
+            {
+                ViewBag.ErrorMessage = result.Error.Message;
+                return View("NotFound");
+            }
+            else if (result.Error.Message == GlobalConstants.Wrong)
+            {
+                ViewBag.ErrorMessage = result.Error.Message;
+                return View("HttpError");
+            }
+
+            return RedirectToAction("MyProfile", "Account");
         }
     }
 }
