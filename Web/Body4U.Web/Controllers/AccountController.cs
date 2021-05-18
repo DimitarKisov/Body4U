@@ -8,6 +8,8 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
+    using Serilog;
+    using System;
     using System.Threading.Tasks;
 
     public class AccountController : Controller
@@ -75,6 +77,8 @@
         [HttpGet]
         public IActionResult Login()
         {
+            var ex = new ArgumentException("Exception");
+            Log.Error(ex ,"AccountController:Login");
             return View();
         }
 
@@ -109,14 +113,6 @@
             return View(model);
         }
 
-        [Authorize]
-        public async Task<IActionResult> Logout()
-        {
-            await signInManager.SignOutAsync();
-
-            return RedirectToAction("Index", "Home");
-        }
-
         [HttpGet]
         [Authorize]
         public IActionResult ChangePassword()
@@ -134,15 +130,78 @@
             }
 
             var user = await userManager.GetUserAsync(User);
-
             var result = await accountService.ChangePassword(model, user);
 
-            if (result == false)
+            if (result.Succeeded)
+            {
+                return RedirectToAction("MyProfile", "Account");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> MyProfile()
+        {
+            var user = await userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                var result = accountService.MyProfile(user);
+
+                return View(result);
+            }
+
+            return RedirectToAction("Login", "Account");
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Edit()
+        {
+            var loggedInUser = await userManager.GetUserAsync(User);
+            var result = accountService.GetMyProfileForEdit(loggedInUser);
+
+            return View(result);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Edit(EditMyProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            return RedirectToAction("MyProfile", "Account");
+            var loggedInUser = await userManager.GetUserAsync(User);
+            var result = await accountService.EditMyProfilForEdit(model, loggedInUser);
+
+            if (result.IsValid)
+            {
+                return RedirectToAction("MyProfile", "Account");
+            }
+            else if (result.Error.Message == GlobalConstants.WrongImageFormat)
+            {
+                ModelState.AddModelError(string.Empty, GlobalConstants.WrongImageFormat);
+                return View(model);
+            }
+
+            ModelState.AddModelError(string.Empty, GlobalConstants.Wrong);
+            return View(model);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -213,57 +272,6 @@
                 return View("ResetPasswordConfirmation");
             }
 
-            return View(model);
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> MyProfile()
-        {
-            var user = await userManager.GetUserAsync(User);
-            if (user != null)
-            {
-                var result = accountService.MyProfile(user);
-
-                return View(result);
-            }
-
-            return RedirectToAction("Login", "Account");
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Edit()
-        {
-            var loggedInUser = await userManager.GetUserAsync(User);
-            var result = accountService.EditMyProfile(loggedInUser);
-
-            return View(result);
-        }
-
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> Edit(EditMyProfileViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var loggedInUser = await userManager.GetUserAsync(User);
-            var result = await accountService.EditMyProfile(model, loggedInUser);
-
-            if (result.IsValid)
-            {
-                return RedirectToAction("MyProfile", "Account");
-            }
-            else if (result.Error.Message == GlobalConstants.WrongImageFormat)
-            {
-                ModelState.AddModelError(string.Empty, GlobalConstants.WrongImageFormat);
-                return View(model);
-            }
-
-            ModelState.AddModelError(string.Empty, GlobalConstants.Wrong);
             return View(model);
         }
 

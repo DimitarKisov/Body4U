@@ -21,6 +21,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Serilog;
 
     public class Startup
     {
@@ -152,7 +153,7 @@
                         }
                         catch (Exception ex)
                         {
-
+                            Log.Error(ex, "Database could not be seeded properly!");
                         }
                     }
                 }

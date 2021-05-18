@@ -3,6 +3,7 @@
     using Body4U.Data.Models;
     using Body4U.Data.Models.Helper;
     using Body4U.Web.ViewModels.Account;
+    using Microsoft.AspNetCore.Identity;
     using SendGrid;
     using System.Threading.Tasks;
 
@@ -12,13 +13,13 @@
 
         Task<bool> Login(LoginRequest model);
 
-        Task<bool> ChangePassword(ChangePasswordRequest model, ApplicationUser user);
+        Task<IdentityResult> ChangePassword(ChangePasswordRequest model, ApplicationUser user);
 
-        MyProfileViewModel MyProfile(ApplicationUser user);
+        GlobalResponseData<MyProfileViewModel> MyProfile(ApplicationUser user);
 
-        EditMyProfileViewModel EditMyProfile(ApplicationUser loggedInUser);
+        GlobalResponseData<EditMyProfileViewModel> GetMyProfileForEdit(ApplicationUser loggedInUser);
 
-        Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser);
+        Task<GlobalResponseData<bool>> EditMyProfilForEdit(EditMyProfileViewModel model, ApplicationUser loggedInUser);
 
         Task<Response> SendEmailConfirmation(string email, string confirmationLink);
 

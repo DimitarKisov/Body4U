@@ -3,7 +3,6 @@
     using Body4U.Common;
     using Body4U.Data;
     using Body4U.Data.Models;
-    using Body4U.Data.Models.Enums;
     using Body4U.Data.Models.Helper;
     using Body4U.Services.Data.Contracts;
     using Body4U.Web.ViewModels.Account;
@@ -11,6 +10,7 @@
     using Microsoft.Extensions.Configuration;
     using SendGrid;
     using SendGrid.Helpers.Mail;
+    using Serilog;
     using System;
     using System.IO;
     using System.Linq;
@@ -81,8 +81,9 @@
 
                 return GlobalResponseData<ApplicationUser>.BadResponse(GlobalConstants.RegistrationUnssuccesful);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error(ex, "AccountService: Register");
                 return GlobalResponseData<ApplicationUser>.BadResponse(GlobalConstants.Wrong);
             }
             
@@ -92,6 +93,8 @@
         {
             try
             {
+                var ex = new ArgumentException("Exception");
+                Log.Error(ex, "AccountService:Login");
                 var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
                 if (result.Succeeded)
@@ -101,13 +104,37 @@
 
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Log.Error(ex, "AccountService: Login");
+                return false;
             }
         }
 
-        public MyProfileViewModel MyProfile(ApplicationUser user)
+        public async Task<IdentityResult> ChangePassword(ChangePasswordRequest model, ApplicationUser user)
+        {
+            try
+            {
+                var result = await userManager.ChangePasswordAsync(user,
+                model.OldPassword, model.NewPassword);
+
+                if (result.Succeeded)
+                {
+                    await signInManager.RefreshSignInAsync(user);
+                    return IdentityResult.Success;
+                }
+
+                var errors = result.Errors as IdentityError[];
+                return IdentityResult.Failed(errors);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "AccountService: ChangePassword");
+                return IdentityResult.Failed();
+            }
+        }
+
+        public GlobalResponseData<MyProfileViewModel> MyProfile(ApplicationUser user)
         {
             try
             {
@@ -122,17 +149,16 @@
                     Gender = user.Sex.ToString()
                 };
 
-                return result;
+                return GlobalResponseData<MyProfileViewModel>.CorrectResponse(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                Log.Error(ex, "AccountService: MyProfile");
+                return GlobalResponseData<MyProfileViewModel>.BadResponse(GlobalConstants.Wrong);
             }
-            
         }
 
-        public EditMyProfileViewModel EditMyProfile(ApplicationUser currentlyLoggedInUser)
+        public GlobalResponseData<EditMyProfileViewModel> GetMyProfileForEdit(ApplicationUser currentlyLoggedInUser)
         {
             try
             {
@@ -155,16 +181,16 @@
                     result.YoutubeChannelUrl = trainer.YoutubeChannelUrl;
                 }
 
-                return result;
+                return GlobalResponseData<EditMyProfileViewModel>.CorrectResponse(result);
             }
             catch (Exception ex)
             {
-
-                throw;
+                Log.Error(ex, "AccountService: GetMyProfileForEdit");
+                return GlobalResponseData<EditMyProfileViewModel>.BadResponse(GlobalConstants.Wrong);
             }
         }
 
-        public async Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser currentlyLoggedInUser)
+        public async Task<GlobalResponseData<bool>> EditMyProfilForEdit(EditMyProfileViewModel model, ApplicationUser currentlyLoggedInUser)
         {
             try
             {
@@ -216,69 +242,33 @@
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "AccountService: EditMyProfilForEdit");
                 return GlobalResponseData<bool>.BadResponse(GlobalConstants.Wrong);
-            }
-        }
-
-        public async Task<bool> ChangePassword(ChangePasswordRequest model, ApplicationUser user)
-        {
-            try
-            {
-                var result = await userManager.ChangePasswordAsync(user,
-                model.OldPassword, model.NewPassword);
-
-                if (result.Succeeded)
-                {
-                    await signInManager.RefreshSignInAsync(user);
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception)
-            {
-                throw;
             }
         }
 
         public async Task<Response> SendEmailConfirmation(string email, string confirmationLink)
         {
-            try
-            {
-                var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
-                var subject = "Email Confirmation";
-                var to = new EmailAddress(email);
-                var htmlContent = $"<p>За да потвърдите, моля кликлнете <a href=\"{confirmationLink}\">ТУК</a></p>";
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
-                return await client.SendEmailAsync(msg);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
+            var subject = "Email Confirmation";
+            var to = new EmailAddress(email);
+            var htmlContent = $"<p>За да потвърдите, моля кликлнете <a href=\"{confirmationLink}\">ТУК</a></p>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
+            return await client.SendEmailAsync(msg);
         }
 
         public async Task<Response> SendEmailResetPassword(string email, string passwordResetLink)
         {
-            try
-            {
-                var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
-                var subject = "Password Reset";
-                var to = new EmailAddress(email);
-                var htmlContent = $"<p>За да подновите, моля кликлнете <a href=\"{passwordResetLink}\">ТУК</a></p>";
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
-                return await client.SendEmailAsync(msg);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
+            var subject = "Password Reset";
+            var to = new EmailAddress(email);
+            var htmlContent = $"<p>За да подновите, моля кликлнете <a href=\"{passwordResetLink}\">ТУК</a></p>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
+            return await client.SendEmailAsync(msg);
         }
     }
 }
