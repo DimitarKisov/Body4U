@@ -3,12 +3,10 @@
     using Body4U.Common;
     using Body4U.Data;
     using Body4U.Data.Models;
-    using Body4U.Data.Models.Enums;
     using Body4U.Data.Models.Helper;
     using Body4U.Services.Data.Contracts;
     using Body4U.Web.ViewModels.Article;
     using cloudscribe.Pagination.Models;
-    using LazZiya.ImageResize;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -37,9 +35,9 @@
         {
             try
             {
-                var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == user.Id);
+                var trainer = await dbContext.Trainers.FirstOrDefaultAsync(x => x.ApplicationUserId == user.Id);
 
-                if ((trainer != null && trainer.IsReadyToWrite) || await userManager.IsInRoleAsync(user, GlobalConstants.AdministratorRoleName))
+                if ((trainer != null && trainer.IsReadyToWrite))
                 {
 
                     if (dbContext.Articles.Any(x => x.Title == model.Title))
@@ -83,8 +81,8 @@
                         }
                     }
 
-                    dbContext.Articles.Add(article);
-                    dbContext.SaveChanges();
+                    await dbContext.Articles.AddAsync(article);
+                    await dbContext.SaveChangesAsync();
 
                     return GlobalResponseData<Article>.CorrectResponse(article);
                 }
@@ -139,11 +137,11 @@
             }
         }
 
-        public GlobalResponseData<GetArticleResponse> Get(int id, ApplicationUser currentlyLoggedInUser = null)
+        public async Task<GlobalResponseData<GetArticleResponse>> Get(int id, ApplicationUser currentlyLoggedInUser = null)
         {
             try
             {
-                var article = dbContext.Articles.Include(x => x.ApplicationUser).FirstOrDefault(x => x.Id == id);
+                var article = await dbContext.Articles.Include(x => x.ApplicationUser).FirstOrDefaultAsync(x => x.Id == id);
                 if (article == null)
                 {
                     return GlobalResponseData<GetArticleResponse>.BadResponse(GlobalConstants.ArticleMissing);
@@ -163,11 +161,11 @@
                     AuthorName = article.ApplicationUser.FullName,
                     ArticleType = article.ArticleType.ToString(),
                     AuthorId = article.ApplicationUserId,
-                    ShortBio = trainer.ShortBio ?? "",
+                    ShortBio = trainer?.ShortBio ?? "",
                     AuthorProfilePicture = Convert.ToBase64String(article.ApplicationUser.ProfilePicture),
-                    AuthorFacebook = trainer.FacebookUrl,
-                    AuthorInstagram = trainer.InstagramUrl,
-                    AuthorYoutubeChannel = trainer.YoutubeChannelUrl,
+                    AuthorFacebook = trainer?.FacebookUrl ?? "",
+                    AuthorInstagram = trainer?.InstagramUrl ?? "",
+                    AuthorYoutubeChannel = trainer?.YoutubeChannelUrl ?? "",
                     //LoggedUserName = currentlyLoggedInUser != null ? $"{currentlyLoggedInUser.FirstName} {currentlyLoggedInUser.LastName}" : "",
                     //IsInFavourites = currentlyLoggedInUser != null ? dbContext.Favourites.Any(x => x.ArticleId == article.Id && x.ApplicationUserId == currentlyLoggedInUser.Id) : false
                 };
@@ -295,7 +293,7 @@
                     }
                 }
 
-                dbContext.SaveChanges();
+                await dbContext.SaveChangesAsync();
 
                 return GlobalResponse.CorrectResponse();
             }

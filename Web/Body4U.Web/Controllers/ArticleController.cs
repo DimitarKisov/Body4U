@@ -70,11 +70,11 @@
 
             if (currentlyLoggedInUser == null)
             {
-                result = articleService.Get(id);
+                result = await articleService.Get(id);
             }
             else
             {
-                result = articleService.Get(id, currentlyLoggedInUser);
+                result = await articleService.Get(id, currentlyLoggedInUser);
             }
 
             if (!result.IsValid)

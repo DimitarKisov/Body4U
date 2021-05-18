@@ -1,8 +1,6 @@
 ﻿namespace Body4U.Web.ViewModels.Article
 {
     using Body4U.Data.Models.Enums;
-    using Microsoft.AspNetCore.Http;
-    using System.ComponentModel.DataAnnotations;
 
     public class EditArticleViewModel
     {

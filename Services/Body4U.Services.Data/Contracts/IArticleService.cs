@@ -12,7 +12,7 @@
 
         PagedResult<GetAllArticlesViewModel> All(int pageNumber, int pageSize);
 
-        GlobalResponseData<GetArticleResponse> Get(int id, ApplicationUser currentlyLoggedInUser = null);
+        Task<GlobalResponseData<GetArticleResponse>> Get(int id, ApplicationUser currentlyLoggedInUser = null);
 
         Task<GlobalResponseData<EditArticleViewModel>> Edit(int id, ApplicationUser currentlyLoggedInUser);
 

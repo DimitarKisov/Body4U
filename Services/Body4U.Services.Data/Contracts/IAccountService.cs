@@ -3,6 +3,7 @@
     using Body4U.Data.Models;
     using Body4U.Data.Models.Helper;
     using Body4U.Web.ViewModels.Account;
+    using SendGrid;
     using System.Threading.Tasks;
 
     public interface IAccountService
@@ -19,8 +20,8 @@
 
         Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser);
 
-        Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink);
+        Task<Response> SendEmailConfirmation(string email, string confirmationLink);
 
-        Task<SendGrid.Response> SendEmailResetPassword(string email, string passwordResetLink);
+        Task<Response> SendEmailResetPassword(string email, string passwordResetLink);
     }
 }

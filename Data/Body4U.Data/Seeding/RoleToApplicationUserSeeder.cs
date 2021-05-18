@@ -23,10 +23,11 @@
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var userName = configuration.GetSection("SeedInfo")["UserName"];
 
-            await AssignRoles(userManager, userName, GlobalConstants.AdministratorRoleName);
+            await AssignRoles(userManager, dbContext, userName, GlobalConstants.AdministratorRoleName);
+            await AssignRoles(userManager, dbContext, userName, GlobalConstants.TrainerRoleName);
         }
 
-        public static async Task AssignRoles(UserManager<ApplicationUser> userManager, string email, string role)
+        public static async Task AssignRoles(UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext, string email, string role)
         {
             var user = await userManager.FindByEmailAsync(email);
 
@@ -34,7 +35,32 @@
             {
                 var result = await userManager.AddToRoleAsync(user, role);
 
-                if (!result.Succeeded)
+                if (result.Succeeded)
+                {
+                    if (role == GlobalConstants.TrainerRoleName)
+                    {
+                        
+                        if (!dbContext.Trainers.Any(x => x.ApplicationUserId == user.Id))
+                        {
+                            var trainer = new Trainer
+                            {
+                                Bio = null,
+                                ShortBio = null,
+                                TrainerImages = null,
+                                TrainerVideos = null,
+                                FacebookUrl = null,
+                                InstagramUrl = null,
+                                YoutubeChannelUrl = null,
+                                IsReadyToVisualize = false,
+                                //CreatedOn = DateTime.Now,
+                                ApplicationUserId = user.Id
+                            };
+
+                            dbContext.Trainers.Add(trainer);
+                        }
+                    }
+                }
+                else
                 {
                     throw new Exception(string.Join(Environment.NewLine, result.Errors.Select(e => e.Description)));
                 }

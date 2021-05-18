@@ -14,8 +14,6 @@
 
         public string PhoneNumber { get; set; }
 
-        public string Sex { get; set; }
-
-        public bool IsReadyToWrite { get; set; }
+        public string Gender { get; set; }
     }
 }

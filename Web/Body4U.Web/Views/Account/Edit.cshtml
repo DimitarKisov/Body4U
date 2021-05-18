@@ -1,41 +1,74 @@
 ﻿@model Body4U.Web.ViewModels.Account.EditMyProfileViewModel
 
 @using Body4U.Data.Models.Enums;
+@using Body4U.Common;
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <input hidden asp-for="Id" />
-    <div class="form-group">
-        <label for="FirstName">Име</label>
-        <input name="FirstName" asp-for="FirstName" class="form-control" id="firstNameInput" placeholder="Име" data-val-required="Името е задължително.">
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+<section class="d-flex align-items-center">
+    <div class="container" style="padding-top:20px">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input hidden asp-for="Id" />
+            <div class="form-group">
+                <label for="FirstName">Име</label>
+                <input name="FirstName" asp-for="FirstName" class="form-control" id="firstNameInput" placeholder="Име" data-val-required="Името е задължително.">
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName">Фамилия</label>
+                <input name="LastName" asp-for="LastName" class="form-control" id="lastNameInput" placeholder="Фамилия" data-val-required="Фамилията е задължителна.">
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age">Години</label>
+                <input name="Age" asp-for="Age" class="form-control" id="ageInput" placeholder="Години">
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber">Телефонен номер</label>
+                <input name="PhoneNumber" asp-for="PhoneNumber" class="form-control" id="phoneNumberInput" placeholder="Телефонен номер">
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProfilePicture">Профилна снимка</label>
+                <input type="file" name="ProfilePicture" asp-for="ProfilePicture" class="form-control" id="profilePictureInput">
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender">Пол</label>
+                <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()">
+                    <option selected="selected" value="">Избери</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger" />
+            </div>
+            @if (this.User.IsInRole(GlobalConstants.TrainerRoleName))
+            {
+                <div class="form-group">
+                    <label asp-for="Bio" class="control-label">Био</label>
+                    <textarea asp-for="Bio" class="form-control w-100" name="Bio" cols="30" rows="9" placeholder="" style="border-style:inset; border-width:2px;"></textarea>
+                    <span asp-validation-for="Bio" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShortBio" class="control-label">Кратко био</label>
+                    <textarea asp-for="ShortBio" class="form-control w-100" name="ShortBio" cols="15" rows="4" placeholder="" style="border-style:inset; border-width:2px;"></textarea>
+                    <span asp-validation-for="ShortBio" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FacebookUrl">Facebook линк</label>
+                    <input name="FacebookUrl" asp-for="FacebookUrl" class="form-control" id="phoneNumberInput" placeholder="">
+                    <span asp-validation-for="FacebookUrl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="InstagramUrl">Instagram линк</label>
+                    <input name="InstagramUrl" asp-for="InstagramUrl" class="form-control" id="phoneNumberInput" placeholder="">
+                    <span asp-validation-for="InstagramUrl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="YoutubeChannelUrl">Youtube канал линк</label>
+                    <input name="YoutubeChannelUrl" asp-for="YoutubeChannelUrl" class="form-control" id="phoneNumberInput" placeholder="">
+                    <span asp-validation-for="YoutubeChannelUrl" class="text-danger"></span>
+                </div>
+            }
+            <button type="submit" class="btn btn-primary">Обнови</button>
+        </form>
     </div>
-    <div class="form-group">
-        <label asp-for="LastName">Фамилия</label>
-        <input name="LastName" asp-for="LastName" class="form-control" id="lastNameInput" placeholder="Фамилия" data-val-required="Фамилията е задължителна.">
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Age">Години</label>
-        <input name="Age" asp-for="Age" class="form-control" id="ageInput" placeholder="Години">
-        <span asp-validation-for="Age" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="PhoneNumber">Телефонен номер</label>
-        <input name="PhoneNumber" asp-for="PhoneNumber" class="form-control" id="phoneNumberInput" placeholder="Телефонен номер">
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ProfilePicture">Профилна снимка</label>
-        <input type="file" name="ProfilePicture" asp-for="ProfilePicture" class="form-control" id="profilePictureInput">
-        <span asp-validation-for="ProfilePicture" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Gender">Пол</label>
-        <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()">
-            <option selected="selected" value="">Избери</option>
-        </select>
-        <span asp-validation-for="Gender" class="text-danger" />
-    </div>
-    <button type="submit" class="btn btn-primary">Обнови</button>
-</form>
+</section>

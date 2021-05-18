@@ -13,6 +13,7 @@
     using SendGrid.Helpers.Mail;
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public class AccountService : IAccountService
@@ -78,7 +79,7 @@
                     return GlobalResponseData<ApplicationUser>.CorrectResponse(user);
                 }
 
-                return GlobalResponseData<ApplicationUser>.BadResponse(GlobalConstants.Wrong);
+                return GlobalResponseData<ApplicationUser>.BadResponse(GlobalConstants.RegistrationUnssuccesful);
             }
             catch (Exception)
             {
@@ -89,43 +90,81 @@
 
         public async Task<bool> Login(LoginRequest model)
         {
-            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-            if (result.Succeeded)
+            try
             {
-                return true;
-            }
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
-            return false;
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public MyProfileViewModel MyProfile(ApplicationUser user)
         {
-            return new MyProfileViewModel()
+            try
             {
-                Id = user.Id,
-                Email = user.Email,
-                ProfilePicture = user.ProfilePicture != null ? Convert.ToBase64String(user.ProfilePicture) : null,
-                FullName = user.FullName,
-                Age = user.Age,
-                PhoneNumber = user.PhoneNumber,
-                Sex = user.Sex.ToString()
-            };
+                var result = new MyProfileViewModel()
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    ProfilePicture = user.ProfilePicture != null ? Convert.ToBase64String(user.ProfilePicture) : null,
+                    FullName = user.FullName,
+                    Age = user.Age,
+                    PhoneNumber = user.PhoneNumber,
+                    Gender = user.Sex.ToString()
+                };
+
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
-        public EditMyProfileViewModel EditMyProfile(ApplicationUser loggedInUser)
+        public EditMyProfileViewModel EditMyProfile(ApplicationUser currentlyLoggedInUser)
         {
-            return new EditMyProfileViewModel()
+            try
             {
-                Id = loggedInUser.Id,
-                FirstName = loggedInUser.FirstName,
-                LastName = loggedInUser.LastName,
-                Age = loggedInUser.Age,
-                PhoneNumber = loggedInUser.PhoneNumber
-            };
+                var result = new EditMyProfileViewModel()
+                {
+                    Id = currentlyLoggedInUser.Id,
+                    FirstName = currentlyLoggedInUser.FirstName,
+                    LastName = currentlyLoggedInUser.LastName,
+                    Age = currentlyLoggedInUser.Age,
+                    PhoneNumber = currentlyLoggedInUser.PhoneNumber
+                };
+
+                var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == currentlyLoggedInUser.Id);
+                if (trainer != null)
+                {
+                    result.Bio = trainer.Bio;
+                    result.ShortBio = trainer.ShortBio;
+                    result.FacebookUrl = trainer.FacebookUrl;
+                    result.InstagramUrl = trainer.InstagramUrl;
+                    result.YoutubeChannelUrl = trainer.YoutubeChannelUrl;
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
-        public async Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser loggedInUser)
+        public async Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileViewModel model, ApplicationUser currentlyLoggedInUser)
         {
             try
             {
@@ -134,10 +173,10 @@
                     return GlobalResponseData<bool>.BadResponse(GlobalConstants.WrongImageFormat);
                 }
 
-                loggedInUser.FirstName = model.FirstName;
-                loggedInUser.LastName = model.LastName;
-                loggedInUser.Age = model.Age;
-                loggedInUser.PhoneNumber = model.PhoneNumber;
+                currentlyLoggedInUser.FirstName = model.FirstName;
+                currentlyLoggedInUser.LastName = model.LastName;
+                currentlyLoggedInUser.Age = model.Age;
+                currentlyLoggedInUser.PhoneNumber = model.PhoneNumber;
 
                 if (model.ProfilePicture != null)
                 {
@@ -147,19 +186,35 @@
                         {
                             await model.ProfilePicture.CopyToAsync(stream);
 
-                            if (loggedInUser.ProfilePicture != stream.ToArray())
+                            if (currentlyLoggedInUser.ProfilePicture != stream.ToArray())
                             {
-                                loggedInUser.ProfilePicture = stream.ToArray();
+                                currentlyLoggedInUser.ProfilePicture = stream.ToArray();
                             }
                         }
                     }
                 }
 
-                dbContext.SaveChanges();
+                var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == currentlyLoggedInUser.Id);
+                if (trainer != null && await userManager.IsInRoleAsync(currentlyLoggedInUser, GlobalConstants.TrainerRoleName))
+                {
+                    trainer.Bio = model.Bio;
+                    trainer.ShortBio = model.ShortBio;
+                    trainer.FacebookUrl = model.FacebookUrl;
+                    trainer.InstagramUrl = model.InstagramUrl;
+                    trainer.YoutubeChannelUrl = model.YoutubeChannelUrl;
+
+                    if (trainer.ShortBio != null && trainer.Bio != null /*&& trainerVideos > 0 && trainerImages > 0*/)
+                    {
+                        trainer.IsReadyToVisualize = true;
+                        trainer.IsReadyToWrite = true;
+                    }
+                }
+
+                await dbContext.SaveChangesAsync();
 
                 return GlobalResponseData<bool>.CorrectResponse(true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return GlobalResponseData<bool>.BadResponse(GlobalConstants.Wrong);
             }
@@ -167,40 +222,63 @@
 
         public async Task<bool> ChangePassword(ChangePasswordRequest model, ApplicationUser user)
         {
-            var result = await userManager.ChangePasswordAsync(user,
+            try
+            {
+                var result = await userManager.ChangePasswordAsync(user,
                 model.OldPassword, model.NewPassword);
 
-            if (result.Succeeded)
-            {
-                await signInManager.RefreshSignInAsync(user);
-                return true;
+                if (result.Succeeded)
+                {
+                    await signInManager.RefreshSignInAsync(user);
+                    return true;
+                }
+
+                return false;
             }
-
-            return false;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public async Task<SendGrid.Response> SendEmailConfirmation(string email, string confirmationLink)
+        public async Task<Response> SendEmailConfirmation(string email, string confirmationLink)
         {
-            var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
-            var subject = "Email Confirmation";
-            var to = new EmailAddress(email);
-            var htmlContent = $"<p>За да потвърдите, моля кликлнете <a href=\"{confirmationLink}\">ТУК</a></p>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
-            return await client.SendEmailAsync(msg);
+            try
+            {
+                var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
+                var subject = "Email Confirmation";
+                var to = new EmailAddress(email);
+                var htmlContent = $"<p>За да потвърдите, моля кликлнете <a href=\"{confirmationLink}\">ТУК</a></p>";
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
+                return await client.SendEmailAsync(msg);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
-        public async Task<SendGrid.Response> SendEmailResetPassword(string email, string passwordResetLink)
+        public async Task<Response> SendEmailResetPassword(string email, string passwordResetLink)
         {
-            var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
-            var subject = "Password Reset";
-            var to = new EmailAddress(email);
-            var htmlContent = $"<p>За да подновите, моля кликлнете <a href=\"{passwordResetLink}\">ТУК</a></p>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
-            return await client.SendEmailAsync(msg);
+            try
+            {
+                var apiKey = configuration.GetSection("SendGrid")["ApiKey"];
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress(configuration.GetSection("SendGrid")["Sender"], "Body4U Admin");
+                var subject = "Password Reset";
+                var to = new EmailAddress(email);
+                var htmlContent = $"<p>За да подновите, моля кликлнете <a href=\"{passwordResetLink}\">ТУК</a></p>";
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, "", htmlContent);
+                return await client.SendEmailAsync(msg);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

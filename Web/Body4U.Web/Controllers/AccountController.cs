@@ -17,7 +17,10 @@
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IConfiguration configuration;
 
-        public AccountController(IAccountService accountService, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+        public AccountController(IAccountService accountService,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IConfiguration configuration)
         {
             this.accountService = accountService;
             this.userManager = userManager;

@@ -144,7 +144,16 @@
                 {
                     using (var transaction = dbContext.Database.BeginTransaction())
                     {
-                        new ApplicationDbContextSeeder(configuration).SeedAsync(dbContext, serviceProvider).GetAwaiter().GetResult();
+                        try
+                        {
+                            new ApplicationDbContextSeeder(configuration).SeedAsync(dbContext, serviceProvider).GetAwaiter().GetResult();
+
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
                     }
                 }
             }

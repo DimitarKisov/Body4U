@@ -5,25 +5,78 @@
 @model Body4U.Web.ViewModels.Account.MyProfileViewModel
 
 
-
-<div class="card mb-3" style="max-width: 540px;">
-    <div class="row g-0">
-        <div class="col-md-4">
-            @if (Model.ProfilePicture == null)
-            {
-                <img src="~/images/default_Profile_Picture.jpg" class="img-fluid" alt="...">
-            }
-            else
-            {
-                <img src="data:image;base64,@Model.ProfilePicture" class="card-img-top" alt="Профилна снимка">
-            }
-        </div>
-        <div class="col-md-8">
-            <div class="card-body">
-                <h5 class="card-title">@Model.FullName</h5>
-                <p class="card-text">@Model.Email</p>
-                <p class="card-text"><small class="text-muted">@Model.PhoneNumber</small></p>
+<section class="d-flex align-items-center">
+    <div class="container">
+        @*<div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    @if (Model.ProfilePicture == null)
+                    {
+                        <img src="~/images/default_Profile_Picture.jpg" class="img-fluid" alt="...">
+                    }
+                    else
+                    {
+                        <img src="data:image;base64,@Model.ProfilePicture" class="card-img-top" alt="Профилна снимка">
+                    }
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">@Model.FullName</h5>
+                        <p class="card-text">@Model.Email</p>
+                        <p class="card-text"><small class="text-muted">@Model.PhoneNumber</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        <div class="left">
+            <div>
+                <a asp-area="" asp-controller="Account" asp-action="Edit" asp-route-id="@Model.Id"><i class="fas fa-user"></i>Профил</a>
+            </div>
+            <div>
+                <a asp-area="" asp-controller="Favourite" asp-action="All" asp-route-id="@Model.Id"><i class="fas fa-heart"></i>Любими статии</a>
+            </div>
+            <div>
+                <a asp-area="" asp-controller="Account" asp-action="ChangePassword"><i class="fas fa-key"></i>Смени парола</a>
             </div>
         </div>
+        <div class="middle">
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        @if (Model.ProfilePicture == null)
+                        {
+                            <img src="~/images/default_Profile_Picture.jpg" class="img-fluid" alt="...">
+                        }
+                        else
+                        {
+                            <img src="data:image;base64,@Model.ProfilePicture" class="card-img-top" alt="Профилна снимка">
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.FullName</h5>
+                            <p class="card-text">@Model.Email</p>
+                            <p class="card-text"><small class="text-muted">@Model.PhoneNumber</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="right"> Some other content </div>*@
     </div>
-</div>
+</section>
+
+<style>
+    .left {
+        display: table-cell;
+    }
+
+    .middle {
+        display: table-cell;
+        width: 100%;
+    }
+
+    /*.right {
+        display: table-cell;
+    }*/
+</style>

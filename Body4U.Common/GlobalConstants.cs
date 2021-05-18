@@ -15,6 +15,7 @@
         public const string PleaseConfirmEmail = "Моля потвърдете вашия email.";
         public const string InvalidPasswordResetToken = "Невалиден email или reset token.";
         public const string UnssuccesfulPasswordReset = "Неуспешно подновяване";
+        public const string RegistrationUnssuccesful = "Неуспешна регистрация";
         #endregion
 
         #region Article
