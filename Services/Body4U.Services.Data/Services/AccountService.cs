@@ -93,8 +93,6 @@
         {
             try
             {
-                var ex = new ArgumentException("Exception");
-                Log.Error(ex, "AccountService:Login");
                 var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
                 if (result.Succeeded)
@@ -158,11 +156,11 @@
             }
         }
 
-        public GlobalResponseData<EditMyProfileViewModel> GetMyProfileForEdit(ApplicationUser currentlyLoggedInUser)
+        public GlobalResponseData<EditMyProfileRequest> EditMyProfile(ApplicationUser currentlyLoggedInUser)
         {
             try
             {
-                var result = new EditMyProfileViewModel()
+                var result = new EditMyProfileRequest()
                 {
                     Id = currentlyLoggedInUser.Id,
                     FirstName = currentlyLoggedInUser.FirstName,
@@ -181,16 +179,16 @@
                     result.YoutubeChannelUrl = trainer.YoutubeChannelUrl;
                 }
 
-                return GlobalResponseData<EditMyProfileViewModel>.CorrectResponse(result);
+                return GlobalResponseData<EditMyProfileRequest>.CorrectResponse(result);
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "AccountService: GetMyProfileForEdit");
-                return GlobalResponseData<EditMyProfileViewModel>.BadResponse(GlobalConstants.Wrong);
+                return GlobalResponseData<EditMyProfileRequest>.BadResponse(GlobalConstants.Wrong);
             }
         }
 
-        public async Task<GlobalResponseData<bool>> EditMyProfilForEdit(EditMyProfileViewModel model, ApplicationUser currentlyLoggedInUser)
+        public async Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileRequest model, ApplicationUser currentlyLoggedInUser)
         {
             try
             {

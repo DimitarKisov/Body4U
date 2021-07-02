@@ -1,6 +1,7 @@
 ﻿namespace Body4U.Web.Controllers
 {
     using Body4U.Common;
+    using Body4U.Data.ClaimsProvider;
     using Body4U.Data.Models;
     using Body4U.Data.Models.Helper;
     using Body4U.Services.Data.Contracts;
@@ -14,11 +15,13 @@
     {
         private readonly IArticleService articleService;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IGetClaimsProvider claimsProvider;
 
-        public ArticleController(IArticleService articleService, UserManager<ApplicationUser> userManager)
+        public ArticleController(IArticleService articleService, UserManager<ApplicationUser> userManager, IGetClaimsProvider claimsProvider)
         {
             this.articleService = articleService;
             this.userManager = userManager;
+            this.claimsProvider = claimsProvider;
         }
 
         [Authorize(Roles = "Administrator, Trainer")]
@@ -98,8 +101,7 @@
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var currentlyLoggedInUser = await userManager.GetUserAsync(User);
-            var result = await articleService.Edit(id, currentlyLoggedInUser);
+            var result = await articleService.Edit(id, claimsProvider);
 
             if (result.Error.Message == GlobalConstants.ArticleMissing)
             {
@@ -119,8 +121,7 @@
         [HttpPost]
         public async Task<IActionResult> Edit(EditArticleRequestModel model)
         {
-            var currentlyLoggedInUser = await userManager.GetUserAsync(User);
-            var result = await articleService.Edit(model, currentlyLoggedInUser);
+            var result = await articleService.Edit(model, claimsProvider);
 
             if (result.Error.Message == GlobalConstants.ArticleMissing)
             {
@@ -128,6 +129,31 @@
                 return View("NotFound");
             }
             else if (result.Error.Message == GlobalConstants.WrongImageFormat)
+            {
+                ViewBag.ErrorMessage = result.Error.Message;
+                return View("NotFound");
+            }
+            else if (result.Error.Message == GlobalConstants.Wrong)
+            {
+                ViewBag.ErrorMessage = result.Error.Message;
+                return View("HttpError");
+            }
+
+            return RedirectToAction("MyProfile", "Account");
+        }
+
+        [Authorize(Roles = "Administrator, Trainer")]
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await articleService.Delete(id, claimsProvider);
+            
+            if (result.Error.Message == GlobalConstants.WrongRights)
+            {
+                ViewBag.ErrorMessage = result.Error.Message;
+                return View("WrongRights");
+            }
+            else if (result.Error.Message == GlobalConstants.NotFound)
             {
                 ViewBag.ErrorMessage = result.Error.Message;
                 return View("NotFound");

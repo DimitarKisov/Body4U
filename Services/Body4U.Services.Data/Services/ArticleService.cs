@@ -2,6 +2,7 @@
 {
     using Body4U.Common;
     using Body4U.Data;
+    using Body4U.Data.ClaimsProvider;
     using Body4U.Data.Models;
     using Body4U.Data.Models.Helper;
     using Body4U.Services.Data.Contracts;
@@ -10,6 +11,7 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Serilog;
     using System;
     using System.Collections.Generic;
     using System.Drawing;
@@ -21,14 +23,10 @@
     public class ArticleService : IArticleService
     {
         private readonly ApplicationDbContext dbContext;
-        private readonly UserManager<ApplicationUser> userManager;
-        private readonly IConfiguration configuration;
 
-        public ArticleService(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public ArticleService(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
-            this.userManager = userManager;
-            this.configuration = configuration;
         }
 
         public async Task<GlobalResponseData<Article>> Create(CreateArticleRequest model, ApplicationUser user)
@@ -37,10 +35,9 @@
             {
                 var trainer = await dbContext.Trainers.FirstOrDefaultAsync(x => x.ApplicationUserId == user.Id);
 
-                if ((trainer != null && trainer.IsReadyToWrite))
+                if (trainer != null && trainer.IsReadyToWrite)
                 {
-
-                    if (dbContext.Articles.Any(x => x.Title == model.Title))
+                    if (await dbContext.Articles.AnyAsync(x => x.Title == model.Title))
                     {
                         return GlobalResponseData<Article>.BadResponse(GlobalConstants.ArticleTitleExsists);
                     }
@@ -91,8 +88,9 @@
                     return GlobalResponseData<Article>.BadResponse(GlobalConstants.NotReadyToWriteArticle);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error(ex, "ArticleService: Create POST");
                 return GlobalResponseData<Article>.BadResponse(GlobalConstants.Wrong);
             }
         }
@@ -103,7 +101,6 @@
             {
                 var articles = dbContext
                 .Articles
-                .Include(x => x.ApplicationUser)
                 .OrderByDescending(x => x.DatePosted)
                 .Select(a => new GetAllArticlesViewModel
                 {
@@ -111,7 +108,7 @@
                     Title = a.Title,
                     Content = a.Content,
                     Image = Convert.ToBase64String(a.Image),
-                    AuthorFullName = a.ApplicationUser.FullName,
+                    Author = a.ApplicationUser.FullName,
                     DatePosted = a.DatePosted.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                     MonthNamePosted = a.DatePosted.ToString("MMM", CultureInfo.InvariantCulture),
                     DateNumberPosted = a.DatePosted.ToString("dd", CultureInfo.InvariantCulture),
@@ -133,6 +130,7 @@
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "ArticleService: All");
                 return null;
             }
         }
@@ -141,7 +139,21 @@
         {
             try
             {
-                var article = await dbContext.Articles.Include(x => x.ApplicationUser).FirstOrDefaultAsync(x => x.Id == id);
+                var article = await dbContext.Articles
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.Title,
+                        x.Content,
+                        x.Image,
+                        x.DatePosted,
+                        x.ArticleType,
+                        x.ApplicationUserId,
+                        Author = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,
+                        AuthorProfilePicture = x.ApplicationUser.ProfilePicture
+                    })
+                    .FirstOrDefaultAsync(x => x.Id == id);
+
                 if (article == null)
                 {
                     return GlobalResponseData<GetArticleResponse>.BadResponse(GlobalConstants.ArticleMissing);
@@ -158,16 +170,14 @@
                     Content = article.Content,
                     Image = Convert.ToBase64String(article.Image),
                     DatePosted = article.DatePosted.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
-                    AuthorName = article.ApplicationUser.FullName,
+                    AuthorName = article.Author,
                     ArticleType = article.ArticleType.ToString(),
                     AuthorId = article.ApplicationUserId,
                     ShortBio = trainer?.ShortBio ?? "",
-                    AuthorProfilePicture = Convert.ToBase64String(article.ApplicationUser.ProfilePicture),
+                    AuthorProfilePicture = Convert.ToBase64String(article.AuthorProfilePicture),
                     AuthorFacebook = trainer?.FacebookUrl ?? "",
                     AuthorInstagram = trainer?.InstagramUrl ?? "",
-                    AuthorYoutubeChannel = trainer?.YoutubeChannelUrl ?? "",
-                    //LoggedUserName = currentlyLoggedInUser != null ? $"{currentlyLoggedInUser.FirstName} {currentlyLoggedInUser.LastName}" : "",
-                    //IsInFavourites = currentlyLoggedInUser != null ? dbContext.Favourites.Any(x => x.ArticleId == article.Id && x.ApplicationUserId == currentlyLoggedInUser.Id) : false
+                    AuthorYoutubeChannel = trainer?.YoutubeChannelUrl ?? ""
                 };
 
                 var dic = new Dictionary<string, int>();
@@ -185,45 +195,33 @@
                 }
                 result.ArticleTypesCount = dic;
 
-                //var articlesCount = articles.Count() > 4 ? 4 : articles.Count();
-                //var recentArticles = articles
-                //    .Select(x => new GetRecentArticlesViewModel
-                //    {
-                //        Id = x.Id,
-                //        Image = Convert.ToBase64String(x.Image),
-                //        Title = x.Title,
-                //        DatePosted = x.DatePosted.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
-                //    })
-                //    .Take(articlesCount);
-
-                //result.RecentArticles.AddRange(recentArticles);
-
                 return GlobalResponseData<GetArticleResponse>.CorrectResponse(result);
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "ArticleService: Get");
                 return GlobalResponseData<GetArticleResponse>.BadResponse(GlobalConstants.Wrong);
             }
         }
 
-        public async Task<GlobalResponseData<EditArticleViewModel>> Edit(int id, ApplicationUser currentlyLoggedInUser)
+        public async Task<GlobalResponseData<EditArticleViewModel>> Edit(int id, IGetClaimsProvider claimsProvider)
         {
             try
             {
-                var article = dbContext.Articles.Find(id);
+                var article = await dbContext.Articles.FindAsync(id);
 
                 if (article == null)
                 {
                     return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.ArticleMissing);
                 }
 
-                if (article.ApplicationUserId != currentlyLoggedInUser.Id)
+                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
                 {
-                    if (!await userManager.IsInRoleAsync(currentlyLoggedInUser, GlobalConstants.AdministratorRoleName) && currentlyLoggedInUser.Email != configuration.GetSection("SeedInfo")["UserName"])
-                    {
-                        //TODO Какво ще се връща ако не е нито треньора, нито администратора (не знам как би станало изобщо тва)
-                        return null;
-                    }
+                    return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.WrongRights);
+                }
+                else if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                {
+                    return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.NotFound);
                 }
 
                 var result = new EditArticleViewModel()
@@ -236,13 +234,14 @@
 
                 return GlobalResponseData<EditArticleViewModel>.CorrectResponse(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error(ex, "ArticleService: Edit GET");
                 return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.Wrong);
             }
         }
 
-        public async Task<GlobalResponse> Edit(EditArticleRequestModel model, ApplicationUser currentlyLoggedInUser)
+        public async Task<GlobalResponse> Edit(EditArticleRequestModel model, IGetClaimsProvider claimsProvider)
         {
             try
             {
@@ -253,18 +252,18 @@
                     return GlobalResponse.BadResponse(GlobalConstants.ArticleMissing);
                 }
 
-                if (article.ApplicationUserId != currentlyLoggedInUser.Id)
+                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
                 {
-                    if (!await userManager.IsInRoleAsync(currentlyLoggedInUser, GlobalConstants.AdministratorRoleName) && currentlyLoggedInUser.Email != configuration.GetSection("SeedInfo")["UserName"])
-                    {
-                        //TODO Какво ще се връща ако не е нито треньора, нито администратора (не знам как би станало изобщо тва)
-                        return null;
-                    }
+                    return GlobalResponse.BadResponse(GlobalConstants.WrongRights);
+                }
+                else if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                {
+                    return GlobalResponse.BadResponse(GlobalConstants.NotFound);
                 }
 
                 if (model.Image.ContentType != "image/jpeg" && model.Image.ContentType != "image/png")
                 {
-                    return GlobalResponseData<Article>.BadResponse(GlobalConstants.WrongImageFormat);
+                    return GlobalResponse.BadResponse(GlobalConstants.WrongImageFormat);
                 }
 
                 article.Title = model.Title.Trim();
@@ -297,8 +296,41 @@
 
                 return GlobalResponse.CorrectResponse();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Error(ex, "ArticleService: Edit POST");
+                return GlobalResponse.BadResponse(GlobalConstants.Wrong);
+            }
+        }
+
+        public async Task<GlobalResponse> Delete(int id, IGetClaimsProvider claimsProvider)
+        {
+            try
+            {
+                var article = await dbContext.Articles.FindAsync(id);
+
+                if (article == null)
+                {
+                    return GlobalResponse.BadResponse(GlobalConstants.ArticleMissing);
+                }
+
+                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                {
+                    return GlobalResponse.BadResponse(GlobalConstants.WrongRights);
+                }
+                else if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                {
+                    return GlobalResponse.BadResponse(GlobalConstants.NotFound);
+                }
+
+                dbContext.Articles.Remove(article);
+                await dbContext.SaveChangesAsync();
+
+                return GlobalResponse.CorrectResponse();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "ArticleService: Delete");
                 return GlobalResponse.BadResponse(GlobalConstants.Wrong);
             }
         }

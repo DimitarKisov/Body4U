@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using Body4U.Data.Models.Enums;
     using Microsoft.AspNetCore.Identity;
@@ -36,6 +37,11 @@
         public Gender Sex { get; set; }
 
         public DateTime CreatedOn { get; set; } = DateTime.Now;
+
+        [DefaultValue(null)]
+        public DateTime? ModifiedOn { get; set; }
+
+        public string ModifiedBy { get; set; }
 
         public bool IsDisabled { get; set; }
 

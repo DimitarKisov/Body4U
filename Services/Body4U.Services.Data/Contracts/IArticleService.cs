@@ -1,5 +1,6 @@
 ﻿namespace Body4U.Services.Data.Contracts
 {
+    using Body4U.Data.ClaimsProvider;
     using Body4U.Data.Models;
     using Body4U.Data.Models.Helper;
     using Body4U.Web.ViewModels.Article;
@@ -14,8 +15,10 @@
 
         Task<GlobalResponseData<GetArticleResponse>> Get(int id, ApplicationUser currentlyLoggedInUser = null);
 
-        Task<GlobalResponseData<EditArticleViewModel>> Edit(int id, ApplicationUser currentlyLoggedInUser);
+        Task<GlobalResponseData<EditArticleViewModel>> Edit(int id, IGetClaimsProvider claimsProvider);
 
-        Task<GlobalResponse> Edit(EditArticleRequestModel model, ApplicationUser currentlyLoggedInUser);
+        Task<GlobalResponse> Edit(EditArticleRequestModel model, IGetClaimsProvider claimsProvider);
+
+        Task<GlobalResponse> Delete(int id, IGetClaimsProvider claimsProvider);
     }
 }

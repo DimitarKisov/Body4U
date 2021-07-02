@@ -40,12 +40,6 @@
 
         public string AuthorYoutubeChannel { get; set; }
 
-        public int CommentsCount { get; set; }
-
-        public bool IsInFavourites { get; set; }
-
-        public string LoggedUserName { get; set; }
-
         public Dictionary<string, int> ArticleTypesCount { get; set; }
 
         public List<GetRecentArticlesViewModel> RecentArticles { get; set; }

@@ -1,6 +1,7 @@
 ﻿namespace Body4U.Web.Controllers
 {
     using Body4U.Common;
+    using Body4U.Data.ClaimsProvider;
     using Body4U.Data.Models;
     using Body4U.Services.Data.Contracts;
     using Body4U.Web.ViewModels.Account;
@@ -8,8 +9,6 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
-    using Serilog;
-    using System;
     using System.Threading.Tasks;
 
     public class AccountController : Controller
@@ -18,16 +17,18 @@
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IConfiguration configuration;
+        private readonly IGetClaimsProvider claimsProvider;
 
         public AccountController(IAccountService accountService,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IConfiguration configuration)
+            IConfiguration configuration, IGetClaimsProvider claimsProvider)
         {
             this.accountService = accountService;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
+            this.claimsProvider = claimsProvider;
         }
 
         [HttpGet]
@@ -77,8 +78,6 @@
         [HttpGet]
         public IActionResult Login()
         {
-            var ex = new ArgumentException("Exception");
-            Log.Error(ex ,"AccountController:Login");
             return View();
         }
 
@@ -154,7 +153,7 @@
             {
                 var result = accountService.MyProfile(user);
 
-                return View(result);
+                return View(result.Data);
             }
 
             return RedirectToAction("Login", "Account");
@@ -165,14 +164,14 @@
         public async Task<IActionResult> Edit()
         {
             var loggedInUser = await userManager.GetUserAsync(User);
-            var result = accountService.GetMyProfileForEdit(loggedInUser);
+            var result = accountService.EditMyProfile(loggedInUser);
 
-            return View(result);
+            return View(result.Data);
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Edit(EditMyProfileViewModel model)
+        public async Task<IActionResult> Edit(EditMyProfileRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -180,7 +179,7 @@
             }
 
             var loggedInUser = await userManager.GetUserAsync(User);
-            var result = await accountService.EditMyProfilForEdit(model, loggedInUser);
+            var result = await accountService.EditMyProfile(model, loggedInUser);
 
             if (result.IsValid)
             {

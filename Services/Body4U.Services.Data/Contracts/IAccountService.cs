@@ -17,9 +17,9 @@
 
         GlobalResponseData<MyProfileViewModel> MyProfile(ApplicationUser user);
 
-        GlobalResponseData<EditMyProfileViewModel> GetMyProfileForEdit(ApplicationUser loggedInUser);
+        GlobalResponseData<EditMyProfileRequest> EditMyProfile(ApplicationUser loggedInUser);
 
-        Task<GlobalResponseData<bool>> EditMyProfilForEdit(EditMyProfileViewModel model, ApplicationUser loggedInUser);
+        Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileRequest model, ApplicationUser loggedInUser);
 
         Task<Response> SendEmailConfirmation(string email, string confirmationLink);
 

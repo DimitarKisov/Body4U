@@ -38,6 +38,13 @@
         public bool IsReadyToWrite { get; set; }
 
         [Required]
+        public DateTime CreatedOn { get; set; }
+
+        public DateTime? ModifiedOn { get; set; }
+
+        public string ModifiedBy { get; set; }
+
+        [Required]
         public string ApplicationUserId { get; set; }
 
         public virtual ApplicationUser ApplicationUser { get; set; }

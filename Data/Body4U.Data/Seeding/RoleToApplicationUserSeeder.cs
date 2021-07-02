@@ -52,7 +52,7 @@
                                 InstagramUrl = null,
                                 YoutubeChannelUrl = null,
                                 IsReadyToVisualize = false,
-                                //CreatedOn = DateTime.Now,
+                                CreatedOn = DateTime.Now,
                                 ApplicationUserId = user.Id
                             };
 

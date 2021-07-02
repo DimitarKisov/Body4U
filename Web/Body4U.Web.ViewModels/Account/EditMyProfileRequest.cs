@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Http;
     using System.ComponentModel.DataAnnotations;
 
-    public class EditMyProfileViewModel
+    public class EditMyProfileRequest
     {
         public string Id { get; set; }
 

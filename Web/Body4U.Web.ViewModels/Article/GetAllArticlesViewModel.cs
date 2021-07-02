@@ -16,7 +16,7 @@
 
         public string ApplicationUserId { get; set; }
 
-        public string AuthorFullName { get; set; }
+        public string Author { get; set; }
 
         public string DatePosted { get; set; }
 

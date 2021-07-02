@@ -8,6 +8,7 @@
     using Body4U.Services.Data.Contracts;
     using Body4U.Services.Data.Services;
     using Body4U.Services.Messaging;
+    using Body4U.Web.Infrastructure;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
@@ -22,6 +23,7 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.EntityFrameworkCore.Infrastructure;
     using Serilog;
+    using Body4U.Data.ClaimsProvider;
 
     public class Startup
     {
@@ -35,61 +37,33 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            services
+                .AddDbContext(configuration)
+                .AddIdentity()
+                .SeedIdentityData(configuration)
+                .ConfigureCookiePolicyOption()
+                .ConfigureApplicationCookie()
+                .AddLocalizations()
+                .AddControllersWtihViews()
+                .AddAntiForgery()
+                .AddCloudscribePagination()
+                .AddDatabaseDeveloperPageExceptionFilter()
+                .AddSingleton(configuration)
+                .AddServices(configuration)
+                .AddRazorPages();
 
-            services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
-                .AddRoles<ApplicationRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
 
-            SeedIdentityData(services, this.configuration);
+            //services.AddRazorPages();
+            //services.AddCloudscribePagination();
+            //services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.Configure<CookiePolicyOptions>(
-                options =>
-                {
-                    options.CheckConsentNeeded = context => true;
-                    options.MinimumSameSitePolicy = SameSiteMode.None;
-                });
-
-            services.ConfigureApplicationCookie(
-                options =>
-                {
-                    // Cookie settings
-                    options.Cookie.HttpOnly = true;
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-                    options.LoginPath = "/Account/Login";
-                    //options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-                    //options.AccessDeniedPath = "/Home/HttpError";
-                    options.SlidingExpiration = true;
-                });
-
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
-
-            services.AddControllersWithViews(
-                options =>
-                {
-                    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-                })
-                .AddRazorRuntimeCompilation()
-                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
-
-            services.AddAntiforgery(
-                options =>
-                {
-                    options.HeaderName = "X-CSRF-TOKEN";
-                });
-
-            services.AddRazorPages();
-            services.AddCloudscribePagination();
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services.AddSingleton(configuration);
+            //services.AddSingleton(configuration);
 
             // Application services
-            services.AddTransient<IAccountService, AccountService>();
-            services.AddTransient<IArticleService, ArticleService>();
-            services.AddTransient<IEmailSender>(x => new SendGridEmailSender(configuration.GetSection("SendGrid")["ApiKey"]));
+            //services.AddTransient<IAccountService, AccountService>();
+            //services.AddTransient<IArticleService, ArticleService>();
+            //services.AddTransient<IGetClaimsProvider, GetClaimsProvider>();
+            //services.AddTransient<IEmailSender>(x => new SendGridEmailSender(configuration.GetSection("SendGrid")["ApiKey"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -128,36 +102,6 @@
                     endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                     endpoints.MapRazorPages();
                 });
-        }
-
-        public static void SeedIdentityData(IServiceCollection services, IConfiguration configuration)
-        {
-            var serviceProvider = services.BuildServiceProvider();
-
-            using (var dbContext = (ApplicationDbContext)serviceProvider.GetService(typeof(ApplicationDbContext)))
-            {
-                if (!(dbContext.GetService<IDatabaseCreator>() as RelationalDatabaseCreator).Exists())
-                {
-                    dbContext.Database.Migrate();
-                }
-
-                if (!dbContext.Users.IgnoreQueryFilters().Any())
-                {
-                    using (var transaction = dbContext.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            new ApplicationDbContextSeeder(configuration).SeedAsync(dbContext, serviceProvider).GetAwaiter().GetResult();
-
-                            transaction.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "Database could not be seeded properly!");
-                        }
-                    }
-                }
-            }
         }
     }
 }
