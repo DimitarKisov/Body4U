@@ -24,6 +24,8 @@
 
         public IFormFile ProfilePicture { get; set; }
 
+        public string CurrentProfilePicture { get; set; }
+
         [Required]
         public Gender Gender { get; set; }
 
@@ -41,5 +43,7 @@
 
         [RegularExpression(@"((http|https):\/\/|)(www\.|)youtube\.com\/(channel\/|user\/)[a-zA-Z0-9\-]{1,}", ErrorMessage = "Невалиден YouTube канал.")]
         public string YoutubeChannelUrl { get; set; }
+
+        public bool? IsReadyToWrite { get; set; }
     }
 }

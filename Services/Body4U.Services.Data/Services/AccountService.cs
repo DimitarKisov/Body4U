@@ -7,6 +7,7 @@
     using Body4U.Services.Data.Contracts;
     using Body4U.Web.ViewModels.Account;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using SendGrid;
     using SendGrid.Helpers.Mail;
@@ -132,44 +133,22 @@
             }
         }
 
-        public GlobalResponseData<MyProfileViewModel> MyProfile(ApplicationUser user)
-        {
-            try
-            {
-                var result = new MyProfileViewModel()
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    ProfilePicture = user.ProfilePicture != null ? Convert.ToBase64String(user.ProfilePicture) : null,
-                    FullName = user.FullName,
-                    Age = user.Age,
-                    PhoneNumber = user.PhoneNumber,
-                    Gender = user.Sex.ToString()
-                };
-
-                return GlobalResponseData<MyProfileViewModel>.CorrectResponse(result);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "AccountService: MyProfile");
-                return GlobalResponseData<MyProfileViewModel>.BadResponse(GlobalConstants.Wrong);
-            }
-        }
-
-        public GlobalResponseData<EditMyProfileRequest> EditMyProfile(ApplicationUser currentlyLoggedInUser)
+        public async Task<GlobalResponseData<EditMyProfileRequest>> MyProfile(ApplicationUser user)
         {
             try
             {
                 var result = new EditMyProfileRequest()
                 {
-                    Id = currentlyLoggedInUser.Id,
-                    FirstName = currentlyLoggedInUser.FirstName,
-                    LastName = currentlyLoggedInUser.LastName,
-                    Age = currentlyLoggedInUser.Age,
-                    PhoneNumber = currentlyLoggedInUser.PhoneNumber
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Age = user.Age,
+                    PhoneNumber = user.PhoneNumber,
+                    Gender = user.Sex,
+                    CurrentProfilePicture = user.ProfilePicture != null ? Convert.ToBase64String(user.ProfilePicture) : null,
                 };
 
-                var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == currentlyLoggedInUser.Id);
+                var trainer = await dbContext.Trainers.FirstOrDefaultAsync(x => x.ApplicationUserId == user.Id);
                 if (trainer != null)
                 {
                     result.Bio = trainer.Bio;
@@ -183,12 +162,45 @@
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "AccountService: GetMyProfileForEdit");
+                Log.Error(ex, "AccountService: MyProfile");
                 return GlobalResponseData<EditMyProfileRequest>.BadResponse(GlobalConstants.Wrong);
             }
         }
 
-        public async Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileRequest model, ApplicationUser currentlyLoggedInUser)
+        //public GlobalResponseData<EditMyProfileRequest> EditMyProfile(ApplicationUser currentlyLoggedInUser)
+        //{
+        //    try
+        //    {
+        //        var result = new EditMyProfileRequest()
+        //        {
+        //            Id = currentlyLoggedInUser.Id,
+        //            FirstName = currentlyLoggedInUser.FirstName,
+        //            LastName = currentlyLoggedInUser.LastName,
+        //            Age = currentlyLoggedInUser.Age,
+        //            PhoneNumber = currentlyLoggedInUser.PhoneNumber
+        //        };
+
+        //        var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == currentlyLoggedInUser.Id);
+        //        if (trainer != null)
+        //        {
+        //            result.Bio = trainer.Bio;
+        //            result.ShortBio = trainer.ShortBio;
+        //            result.FacebookUrl = trainer.FacebookUrl;
+        //            result.InstagramUrl = trainer.InstagramUrl;
+        //            result.YoutubeChannelUrl = trainer.YoutubeChannelUrl;
+        //            result.IsReadyToWrite = trainer.IsReadyToWrite;
+        //        }
+
+        //        return GlobalResponseData<EditMyProfileRequest>.CorrectResponse(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error(ex, "AccountService: GetMyProfileForEdit");
+        //        return GlobalResponseData<EditMyProfileRequest>.BadResponse(GlobalConstants.Wrong);
+        //    }
+        //}
+
+        public async Task<GlobalResponseData<bool>> MyProfile(EditMyProfileRequest model, ApplicationUser currentlyLoggedInUser)
         {
             try
             {

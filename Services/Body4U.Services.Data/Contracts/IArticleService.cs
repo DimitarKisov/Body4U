@@ -11,7 +11,7 @@
     {
         Task<GlobalResponseData<Article>> Create(CreateArticleRequest model, ApplicationUser user);
 
-        PagedResult<GetAllArticlesViewModel> All(int pageNumber, int pageSize);
+        Task<PagedResult<GetAllArticlesViewModel>> All(int pageNumber, int pageSize);
 
         Task<GlobalResponseData<GetArticleResponse>> Get(int id, ApplicationUser currentlyLoggedInUser = null);
 

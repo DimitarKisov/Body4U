@@ -15,11 +15,11 @@
 
         Task<IdentityResult> ChangePassword(ChangePasswordRequest model, ApplicationUser user);
 
-        GlobalResponseData<MyProfileViewModel> MyProfile(ApplicationUser user);
+        Task<GlobalResponseData<EditMyProfileRequest>> MyProfile(ApplicationUser user);
 
-        GlobalResponseData<EditMyProfileRequest> EditMyProfile(ApplicationUser loggedInUser);
+        //GlobalResponseData<EditMyProfileRequest> EditMyProfile(ApplicationUser loggedInUser);
 
-        Task<GlobalResponseData<bool>> EditMyProfile(EditMyProfileRequest model, ApplicationUser loggedInUser);
+        Task<GlobalResponseData<bool>> MyProfile(EditMyProfileRequest model, ApplicationUser loggedInUser);
 
         Task<Response> SendEmailConfirmation(string email, string confirmationLink);
 

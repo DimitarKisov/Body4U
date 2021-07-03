@@ -151,7 +151,7 @@
             var user = await userManager.GetUserAsync(User);
             if (user != null)
             {
-                var result = accountService.MyProfile(user);
+                var result = await accountService.MyProfile(user);
 
                 return View(result.Data);
             }
@@ -159,19 +159,19 @@
             return RedirectToAction("Login", "Account");
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Edit()
-        {
-            var loggedInUser = await userManager.GetUserAsync(User);
-            var result = accountService.EditMyProfile(loggedInUser);
+        //[HttpGet]
+        //[Authorize]
+        //public async Task<IActionResult> Edit()
+        //{
+        //    var loggedInUser = await userManager.GetUserAsync(User);
+        //    var result = accountService.EditMyProfile(loggedInUser);
 
-            return View(result.Data);
-        }
+        //    return View(result.Data);
+        //}
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Edit(EditMyProfileRequest model)
+        public async Task<IActionResult> MyProfile(EditMyProfileRequest model)
         {
             if (!ModelState.IsValid)
             {
@@ -179,7 +179,7 @@
             }
 
             var loggedInUser = await userManager.GetUserAsync(User);
-            var result = await accountService.EditMyProfile(model, loggedInUser);
+            var result = await accountService.MyProfile(model, loggedInUser);
 
             if (result.IsValid)
             {

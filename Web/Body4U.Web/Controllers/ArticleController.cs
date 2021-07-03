@@ -53,9 +53,9 @@
         }
 
         [HttpGet]
-        public IActionResult All(int pageNumber = 1, int pageSize = 6)
+        public async Task<IActionResult> All(int pageNumber = 1, int pageSize = 6)
         {
-            var result = articleService.All(pageNumber, pageSize);
+            var result = await articleService.All(pageNumber, pageSize);
 
             if (result != null)
             {

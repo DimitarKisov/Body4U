@@ -11,6 +11,7 @@
 body {
   font-family: "Open Sans", sans-serif;
   color: #444444;
+  margin-bottom:0px;
 }
 
 a {
@@ -68,10 +69,10 @@ h1, h2, h3, h4, h5, h6 {
 # Header
 --------------------------------------------------------------*/
 #header {
-  background: #fff;
-  transition: all 0.5s;
-  z-index: 997;
-  padding: 20px 0;
+    background: #e03a3c;
+    transition: all 0.5s;
+    z-index: 997;
+    padding: 20px 0;
 }
 
 #header.header-scrolled {
@@ -140,7 +141,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-menu a:hover, .nav-menu .active > a, .nav-menu li:hover > a {
-  color: #e03a3c;
+  /*color: #e03a3c; tova beshe po default ot temata*/
+  color:white;
 }
 
 .nav-menu .drop-down ul {

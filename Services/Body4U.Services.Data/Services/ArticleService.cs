@@ -95,7 +95,7 @@
             }
         }
 
-        public PagedResult<GetAllArticlesViewModel> All(int pageNumber, int pageSize)
+        public async Task<PagedResult<GetAllArticlesViewModel>> All(int pageNumber, int pageSize)
         {
             try
             {
@@ -120,7 +120,7 @@
 
                 var result = new PagedResult<GetAllArticlesViewModel>
                 {
-                    Data = articles.AsNoTracking().ToList(),
+                    Data = await articles.AsNoTracking().ToListAsync(),
                     TotalItems = dbContext.Articles.Count(),
                     PageNumber = pageNumber,
                     PageSize = pageSize

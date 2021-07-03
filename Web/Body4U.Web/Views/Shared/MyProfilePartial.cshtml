@@ -1,0 +1,46 @@
+﻿@model string
+
+@inject Body4U.Data.ApplicationDbContext DbContext
+
+@using Body4U.Common
+
+@{
+    var currentProfilePicture = DbContext.Users.Find(Model).ProfilePicture;
+    var convertedProfilePicture = currentProfilePicture != null ? Convert.ToBase64String(currentProfilePicture) : null;
+}
+
+<nav id="sidebar">
+    <div class="p-4 pt-5">
+        @*<a href="#" class="img logo rounded-circle mb-5" style="background-image: url(images/logo.jpg);"></a>*@
+        @if (convertedProfilePicture == null)
+        {
+            <img class="img logo rounded-circle mb-5" src="~/images/default_Profile_Picture.jpg" alt="...">
+        }
+        else
+        {
+            <img class="img logo rounded-circle mb-5" src="data:image;base64,@convertedProfilePicture" alt="Профилна снимка">
+        }
+        <ul class="list-unstyled components mb-5">
+            @if (this.User.IsInRole(GlobalConstants.TrainerRoleName) || this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            {
+                <li><a asp-area="" asp-controller="Account" asp-action="MyProfile"><i class="fas fa-user fa-icon"></i>Профил</a></li>
+                <li><a asp-area="" asp-controller="Trainer" asp-action="MyArticles" asp-route-id="@Model"><i class="fas fa-newspaper fa-icon"></i>Моите статии</a></li>
+                <li><a asp-area="" asp-controller="Trainer" asp-action="MyPhotos" asp-route-id="@Model"><i class="fas fa-camera fa-icon"></i>Моите снимки</a></li>
+                <li><a asp-area="" asp-controller="Trainer" asp-action="MyVideos" asp-route-id="@Model"><i class="fas fa-video fa-icon"></i>Моите видеа</a></li>
+                <li><a asp-area="" asp-controller="Trainer" asp-action="MyServices" asp-route-id="@Model"><i class="fas fa-business-time fa-icon"></i>Моите услуги</a></li>
+                <li><a asp-area="" asp-controller="Article" asp-action="Create"><i class="fas fa-pen fa-icon"></i>Напиши статия</a></li>
+                <li><a asp-area="" asp-controller="Service" asp-action="Create"><i class="fas fa-file-alt fa-icon"></i>Създай услуга</a></li>
+            }
+            else
+            {
+                <li><a asp-area="" asp-controller="Account" asp-action="EditMyProfile" asp-route-id="@Model"><i class="fas fa-user fa-icon"></i>Профил</a></li>
+            }
+            <li><a asp-area="" asp-controller="Favourite" asp-action="All" asp-route-id="@Model"><i class="fas fa-heart fa-icon"></i>Любими статии</a></li>
+            <li><a asp-area="" asp-controller="Account" asp-action="ChangePassword" asp-route-id="@Model"><i class="fas fa-key fa-icon"></i>Смени парола</a></li>
+            @if (this.User.IsInRole(GlobalConstants.AdministratorRoleName))
+            {
+                <li><a asp-area="Administration" asp-controller="Dashboard" asp-action="Index"><i class="fas fa-users-cog fa-icon"></i>Админ панел</a></li>
+            }
+        </ul>
+    </div>
+</nav>

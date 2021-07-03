@@ -5,8 +5,8 @@
 }
 
 <section class="d-flex align-items-center">
-    <div class="container" style="padding-top:20px">
-        <form class="form-signin" enctype="multipart/form-data" method="post" asp-controller="Account" asp-action="Login" asp-route-returnurl="@returnUrl">
+    <div class="container login-container">
+        <form class="form-signin login-form" enctype="multipart/form-data" method="post" asp-controller="Account" asp-action="Login" asp-route-returnurl="@returnUrl">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <img class="mb-4" src="~/images/Webp.net-resizeimage.png" alt="" width="85" height="72">
             <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>

@@ -2,7 +2,6 @@
 {
     using Body4U.Common;
     using Microsoft.AspNetCore.Http;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;

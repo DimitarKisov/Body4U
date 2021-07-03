@@ -1,0 +1,17 @@
+﻿.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-container{
+    margin-top:20px;
+}
+
+#sidebarCollapse {
+    margin-bottom: 10px;
+}
+
+.fa-icon{
+    padding-right:5px;
+}
