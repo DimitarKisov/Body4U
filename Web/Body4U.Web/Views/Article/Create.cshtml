@@ -5,7 +5,7 @@
 
 <section class="d-flex align-items-center">
     <div class="wrapper d-flex align-items-stretch">
-        <partial name="MyProfilePartial" model="User.Claims.FirstOrDefault(x=>x.Type == ClaimTypes.NameIdentifier)?.Value" />
+        <partial name="_MyProfilePartial" model="User.Claims.FirstOrDefault(x=>x.Type == ClaimTypes.NameIdentifier)?.Value" />
         <div id="content" class="p-4 p-md-5">
             <button type="button" id="sidebarCollapse" class="btn btn-primary">
                 <i class="fa fa-bars"></i>

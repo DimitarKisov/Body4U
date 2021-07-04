@@ -103,15 +103,23 @@
         {
             var result = await articleService.Edit(id, claimsProvider);
 
-            if (result.Error.Message == GlobalConstants.ArticleMissing)
+            if (!result.IsValid)
             {
-                ViewBag.ErrorMessage = result.Error.Message;
-                return View("NotFound");
-            }
-            else if (result.Error.Message == GlobalConstants.Wrong)
-            {
-                ViewBag.ErrorMessage = result.Error.Message;
-                return View("HttpError");
+                switch (result.Error.Message)
+                {
+                    case GlobalConstants.ArticleMissing:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.WrongRights:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("WrongRights");
+                    case GlobalConstants.NotFound:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.Wrong:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("HttpError");
+                }
             }
 
             return View(result.Data);
@@ -121,25 +129,64 @@
         [HttpPost]
         public async Task<IActionResult> Edit(EditArticleRequestModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var result = await articleService.Edit(model, claimsProvider);
 
-            if (result.Error.Message == GlobalConstants.ArticleMissing)
+            if (!result.IsValid)
             {
-                ViewBag.ErrorMessage = result.Error.Message;
-                return View("NotFound");
-            }
-            else if (result.Error.Message == GlobalConstants.WrongImageFormat)
-            {
-                ViewBag.ErrorMessage = result.Error.Message;
-                return View("NotFound");
-            }
-            else if (result.Error.Message == GlobalConstants.Wrong)
-            {
-                ViewBag.ErrorMessage = result.Error.Message;
-                return View("HttpError");
+                switch (result.Error.Message)
+                {
+                    case GlobalConstants.ArticleMissing:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.WrongRights:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("WrongRights");
+                    case GlobalConstants.NotFound:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.WrongImageFormat:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View(model);
+                    case GlobalConstants.Wrong:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("HttpError");
+                }
             }
 
             return RedirectToAction("MyProfile", "Account");
+
+            //if (result.Error.Message == GlobalConstants.ArticleMissing)
+            //{
+            //    ViewBag.ErrorMessage = result.Error.Message;
+            //    return View("NotFound");
+            //}
+            //else if (result.Error.Message == GlobalConstants.WrongRights)
+            //{
+            //    ViewBag.ErrorMessage = result.Error.Message;
+            //    return View("WrongRights");
+            //}
+            //else if (result.Error.Message == GlobalConstants.NotFound)
+            //{
+            //    ViewBag.ErrorMessage = result.Error.Message;
+            //    return View("NotFound");
+            //}
+            //else if (result.Error.Message == GlobalConstants.WrongImageFormat)
+            //{
+            //    ViewBag.ErrorMessage = result.Error.Message;
+            //    return View("NotFound");
+            //}
+            //else if (result.Error.Message == GlobalConstants.Wrong)
+            //{
+            //    ViewBag.ErrorMessage = result.Error.Message;
+            //    return View("HttpError");
+            //}
+
+            //return RedirectToAction("MyProfile", "Account");
         }
 
         [Authorize(Roles = "Administrator, Trainer")]

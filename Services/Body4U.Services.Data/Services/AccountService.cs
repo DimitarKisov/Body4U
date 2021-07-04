@@ -2,6 +2,7 @@
 {
     using Body4U.Common;
     using Body4U.Data;
+    using Body4U.Data.ClaimsProvider;
     using Body4U.Data.Models;
     using Body4U.Data.Models.Helper;
     using Body4U.Services.Data.Contracts;
@@ -13,6 +14,8 @@
     using SendGrid.Helpers.Mail;
     using Serilog;
     using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -254,6 +257,42 @@
             {
                 Log.Error(ex, "AccountService: EditMyProfilForEdit");
                 return GlobalResponseData<bool>.BadResponse(GlobalConstants.Wrong);
+            }
+        }
+
+        public async Task<GlobalResponseData<List<MyArticlesViewModel>>> MyArticles(string userId, IGetClaimsProvider claimsProvider)
+        {
+            try
+            {
+                if (userId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
+                {
+                    return GlobalResponseData<List<MyArticlesViewModel>>.BadResponse(GlobalConstants.WrongRights);
+                }
+                else if (userId != claimsProvider.UserId && !claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
+                {
+                    return GlobalResponseData<List<MyArticlesViewModel>>.BadResponse(GlobalConstants.NotFound);
+                }
+
+                var articles = await dbContext.Articles
+                    .Where(a => a.ApplicationUserId == userId)
+                    .OrderByDescending(a => a.DatePosted)
+                    .Select(a => new MyArticlesViewModel
+                    {
+                        Id = a.Id,
+                        Title = a.Title,
+                        Content = a.Content,
+                        Image = Convert.ToBase64String(a.Image),
+                        DatePosted = a.DatePosted.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    })
+                    .ToListAsync();
+
+
+                return GlobalResponseData<List<MyArticlesViewModel>>.CorrectResponse(articles);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "AccountService: MyArticles");
+                return GlobalResponseData<List<MyArticlesViewModel>>.BadResponse(GlobalConstants.Wrong);
             }
         }
 

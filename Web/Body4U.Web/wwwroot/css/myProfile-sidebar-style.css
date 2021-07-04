@@ -3771,7 +3771,7 @@ input[type="button"].btn-block {
   position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
-  display: flex;
+  display: inline-flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
@@ -5501,7 +5501,10 @@ button.bg-dark:focus {
   border-radius: 0.3rem !important; }
 
 .rounded-circle {
-  border-radius: 50% !important; }
+    /*border-radius: 50% !important;*/
+    border-radius: 50%;
+    height: 100px;
+}
 
 .rounded-pill {
   border-radius: 50rem !important; }

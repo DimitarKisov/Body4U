@@ -195,6 +195,28 @@
             return View(model);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Trainer, Administrator, Moderator")]
+        public async Task<IActionResult> MyArticles(string userId)
+        {
+            var result = await accountService.MyArticles(userId, claimsProvider);
+
+            switch (result.Error?.Message)
+            {
+                case GlobalConstants.WrongRights:
+                    ViewBag.ErrorMessage = result.Error.Message;
+                    return View("WrongRights");
+                case GlobalConstants.NotFound:
+                    ViewBag.ErrorMessage = result.Error.Message;
+                    return View("NotFound");
+                case GlobalConstants.Wrong:
+                    ViewBag.ErrorMessage = result.Error.Message;
+                    return View("HttpError");
+            }
+
+            return View(result.Data);
+        }
+
         [Authorize]
         public async Task<IActionResult> Logout()
         {

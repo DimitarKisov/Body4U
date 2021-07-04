@@ -215,11 +215,11 @@
                     return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.ArticleMissing);
                 }
 
-                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
                 {
                     return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.WrongRights);
                 }
-                else if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                else if (article.ApplicationUserId != claimsProvider.UserId && !claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
                 {
                     return GlobalResponseData<EditArticleViewModel>.BadResponse(GlobalConstants.NotFound);
                 }
@@ -252,11 +252,11 @@
                     return GlobalResponse.BadResponse(GlobalConstants.ArticleMissing);
                 }
 
-                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
                 {
                     return GlobalResponse.BadResponse(GlobalConstants.WrongRights);
                 }
-                else if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                else if (article.ApplicationUserId != claimsProvider.UserId && !claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
                 {
                     return GlobalResponse.BadResponse(GlobalConstants.NotFound);
                 }
@@ -314,11 +314,11 @@
                     return GlobalResponse.BadResponse(GlobalConstants.ArticleMissing);
                 }
 
-                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
                 {
                     return GlobalResponse.BadResponse(GlobalConstants.WrongRights);
                 }
-                else if (article.ApplicationUserId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && claimsProvider.IsAdmin.HasValue)
+                else if (article.ApplicationUserId != claimsProvider.UserId && !claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
                 {
                     return GlobalResponse.BadResponse(GlobalConstants.NotFound);
                 }

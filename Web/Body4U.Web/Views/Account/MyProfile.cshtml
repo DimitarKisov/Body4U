@@ -5,12 +5,14 @@
 
 <section class="d-flex align-items-center">
     <div class="wrapper d-flex align-items-stretch">
-        <partial name="MyProfilePartial" model="Model.Id" />
+        <partial name="_MyProfilePartial" model="Model.Id" />
         <div id="content" class="p-4 p-md-5">
-            <button type="button" id="sidebarCollapse" class="btn btn-primary">
-                <i class="fa fa-bars"></i>
-                <span class="sr-only">Toggle Menu</span>
-            </button>
+            <div class="show-hide-sidebar">
+                <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                    <i class="fa fa-bars"></i>
+                    <span class="sr-only">Toggle Menu</span>
+                </button>
+            </div>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <form asp-action="MyProfile" method="post" enctype="multipart/form-data">
                 <input hidden asp-for="Id" />

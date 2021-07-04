@@ -15,3 +15,31 @@
 .fa-icon{
     padding-right:5px;
 }
+
+.show-hide-sidebar {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.card-flex-body {
+    width: 18rem;
+    vertical-align: top;
+    margin: 0px 10px 10px 0px;
+}
+
+.card-img-xy {
+    max-height: 200px;
+    min-height: 200px;
+}
+
+.card-icon {
+    font-size: 25px;
+}
+
+.card-btn {
+    color: #e03a3c;
+    background: white;
+    border: none;
+    padding: 0px;
+}

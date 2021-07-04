@@ -24,7 +24,7 @@
             @if (this.User.IsInRole(GlobalConstants.TrainerRoleName) || this.User.IsInRole(GlobalConstants.AdministratorRoleName))
             {
                 <li><a asp-area="" asp-controller="Account" asp-action="MyProfile"><i class="fas fa-user fa-icon"></i>Профил</a></li>
-                <li><a asp-area="" asp-controller="Trainer" asp-action="MyArticles" asp-route-id="@Model"><i class="fas fa-newspaper fa-icon"></i>Моите статии</a></li>
+                <li><a asp-area="" asp-controller="Account" asp-action="MyArticles" asp-route-userId="@Model"><i class="fas fa-newspaper fa-icon"></i>Моите статии</a></li>
                 <li><a asp-area="" asp-controller="Trainer" asp-action="MyPhotos" asp-route-id="@Model"><i class="fas fa-camera fa-icon"></i>Моите снимки</a></li>
                 <li><a asp-area="" asp-controller="Trainer" asp-action="MyVideos" asp-route-id="@Model"><i class="fas fa-video fa-icon"></i>Моите видеа</a></li>
                 <li><a asp-area="" asp-controller="Trainer" asp-action="MyServices" asp-route-id="@Model"><i class="fas fa-business-time fa-icon"></i>Моите услуги</a></li>
