@@ -152,22 +152,17 @@
             if (user != null)
             {
                 var result = await accountService.MyProfile(user);
+                if (!result.IsValid)
+                {
+                    ViewBag.ErrorMessage = result.Error.Message;
+                    return View("HttpError");
+                }
 
                 return View(result.Data);
             }
 
             return RedirectToAction("Login", "Account");
         }
-
-        //[HttpGet]
-        //[Authorize]
-        //public async Task<IActionResult> Edit()
-        //{
-        //    var loggedInUser = await userManager.GetUserAsync(User);
-        //    var result = accountService.EditMyProfile(loggedInUser);
-
-        //    return View(result.Data);
-        //}
 
         [HttpPost]
         [Authorize]
@@ -181,18 +176,26 @@
             var loggedInUser = await userManager.GetUserAsync(User);
             var result = await accountService.MyProfile(model, loggedInUser);
 
-            if (result.IsValid)
+            if (!result.IsValid)
             {
-                return RedirectToAction("MyProfile", "Account");
+                switch (result.Error.Message)
+                {
+                    case GlobalConstants.WrongImageFormat:
+                        ModelState.AddModelError(string.Empty, result.Error.Message);
+                        return View(model);
+                    case GlobalConstants.MaxTrainerImages:
+                        ModelState.AddModelError(string.Empty, result.Error.Message);
+                        return View(model);
+                    case GlobalConstants.TrainerVideoUrl:
+                        ModelState.AddModelError(string.Empty, result.Error.Message);
+                        return View(model);
+                    case GlobalConstants.Wrong:
+                        ModelState.AddModelError(string.Empty, result.Error.Message);
+                        return View(model);
+                }
             }
-            else if (result.Error.Message == GlobalConstants.WrongImageFormat)
-            {
-                ModelState.AddModelError(string.Empty, GlobalConstants.WrongImageFormat);
-                return View(model);
-            }
-
-            ModelState.AddModelError(string.Empty, GlobalConstants.Wrong);
-            return View(model);
+            TempData["Success"] = "Успешно редактирахте вашия профил.";
+            return RedirectToAction("MyProfile");
         }
 
         [HttpGet]
@@ -201,17 +204,20 @@
         {
             var result = await accountService.MyArticles(userId, claimsProvider);
 
-            switch (result.Error?.Message)
+            if (!result.IsValid)
             {
-                case GlobalConstants.WrongRights:
-                    ViewBag.ErrorMessage = result.Error.Message;
-                    return View("WrongRights");
-                case GlobalConstants.NotFound:
-                    ViewBag.ErrorMessage = result.Error.Message;
-                    return View("NotFound");
-                case GlobalConstants.Wrong:
-                    ViewBag.ErrorMessage = result.Error.Message;
-                    return View("HttpError");
+                switch (result.Error.Message)
+                {
+                    case GlobalConstants.WrongRights:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("WrongRights");
+                    case GlobalConstants.NotFound:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.Wrong:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("HttpError");
+                }
             }
 
             return View(result.Data);

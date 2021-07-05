@@ -17,6 +17,11 @@
         public const string UnssuccesfulPasswordReset = "Неуспешно подновяване";
         public const string RegistrationUnssuccesful = "Неуспешна регистрация";
         public const string WrongRights = "Нямате права за това действие.";
+        public const string TrainerVideoUrl = "Имате зададен грешен линк за видео.";
+        public const string MaxTrainerImages = "Не може да имате повече от 6 снимки.";
+
+        public const int MaxTrainerImagesCount = 6;
+        public const int MaxTrainerVideosCount = 3;
         #endregion
 
         #region Article

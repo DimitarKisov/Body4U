@@ -90,7 +90,7 @@
                 Log.Error(ex, "AccountService: Register");
                 return GlobalResponseData<ApplicationUser>.BadResponse(GlobalConstants.Wrong);
             }
-            
+
         }
 
         public async Task<bool> Login(LoginRequest model)
@@ -159,49 +159,27 @@
                     result.FacebookUrl = trainer.FacebookUrl;
                     result.InstagramUrl = trainer.InstagramUrl;
                     result.YoutubeChannelUrl = trainer.YoutubeChannelUrl;
+
+                    var currentTrainerImagesCount = dbContext.TrainerImages
+                        .Where(x => x.TrainerId == trainer.Id)
+                        .Count();
+
+                    var currentTrainerVideosCount = dbContext.TrainerVideos
+                        .Where(x => x.TrainerId == trainer.Id)
+                        .Count();
+
+                    result.TrainerImagesCount = currentTrainerImagesCount;
+                    result.TrainerVideosCount = currentTrainerVideosCount;
                 }
 
                 return GlobalResponseData<EditMyProfileRequest>.CorrectResponse(result);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "AccountService: MyProfile");
+                Log.Error(ex, "AccountService: MyProfile GET");
                 return GlobalResponseData<EditMyProfileRequest>.BadResponse(GlobalConstants.Wrong);
             }
         }
-
-        //public GlobalResponseData<EditMyProfileRequest> EditMyProfile(ApplicationUser currentlyLoggedInUser)
-        //{
-        //    try
-        //    {
-        //        var result = new EditMyProfileRequest()
-        //        {
-        //            Id = currentlyLoggedInUser.Id,
-        //            FirstName = currentlyLoggedInUser.FirstName,
-        //            LastName = currentlyLoggedInUser.LastName,
-        //            Age = currentlyLoggedInUser.Age,
-        //            PhoneNumber = currentlyLoggedInUser.PhoneNumber
-        //        };
-
-        //        var trainer = dbContext.Trainers.FirstOrDefault(x => x.ApplicationUserId == currentlyLoggedInUser.Id);
-        //        if (trainer != null)
-        //        {
-        //            result.Bio = trainer.Bio;
-        //            result.ShortBio = trainer.ShortBio;
-        //            result.FacebookUrl = trainer.FacebookUrl;
-        //            result.InstagramUrl = trainer.InstagramUrl;
-        //            result.YoutubeChannelUrl = trainer.YoutubeChannelUrl;
-        //            result.IsReadyToWrite = trainer.IsReadyToWrite;
-        //        }
-
-        //        return GlobalResponseData<EditMyProfileRequest>.CorrectResponse(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Log.Error(ex, "AccountService: GetMyProfileForEdit");
-        //        return GlobalResponseData<EditMyProfileRequest>.BadResponse(GlobalConstants.Wrong);
-        //    }
-        //}
 
         public async Task<GlobalResponseData<bool>> MyProfile(EditMyProfileRequest model, ApplicationUser currentlyLoggedInUser)
         {
@@ -242,7 +220,74 @@
                     trainer.InstagramUrl = model.InstagramUrl;
                     trainer.YoutubeChannelUrl = model.YoutubeChannelUrl;
 
-                    if (trainer.ShortBio != null && trainer.Bio != null /*&& trainerVideos > 0 && trainerImages > 0*/)
+                    var currentTrainerImagesCount = dbContext.TrainerImages
+                        .Where(x => x.TrainerId == trainer.Id)
+                        .Count();
+
+                    model.TrainerImagesCount = currentTrainerImagesCount;
+
+                    var currentTrainerVideosCount = dbContext.TrainerVideos
+                        .Where(x => x.TrainerId == trainer.Id)
+                        .Count();
+
+                    model.TrainerVideosCount = currentTrainerVideosCount;
+
+                    if (model.TrainerImages?.Count() > 0)
+                    {
+                        if (model.TrainerImages.Count() <= GlobalConstants.MaxTrainerImagesCount - currentTrainerImagesCount)
+                        {
+                            foreach (var item in model.TrainerImages)
+                            {
+                                if (item.Length > 0)
+                                {
+                                    using (var stream = new MemoryStream())
+                                    {
+                                        await item.CopyToAsync(stream);
+                                        var trainerImage = new TrainerImage
+                                        {
+                                            Image = stream.ToArray(),
+                                            TrainerId = trainer.Id
+                                        };
+
+                                        await dbContext.TrainerImages.AddAsync(trainerImage);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            return GlobalResponseData<bool>.BadResponse(GlobalConstants.MaxTrainerImages);
+                        }
+                    }
+
+                    if (model.TrainerVideos?.Count() > 0 && model.TrainerVideos.Any(x => !string.IsNullOrWhiteSpace(x)))
+                    {
+                        var trainerVideos = model.TrainerVideos.Where(x => x != null);
+
+                        if (trainerVideos.Any(x => !x.Contains("youtube.com")))
+                        {
+                            model.TrainerVideos.Clear();
+                            return GlobalResponseData<bool>.BadResponse(GlobalConstants.TrainerVideoUrl);
+                        }
+
+                        if (trainerVideos.Count() <= GlobalConstants.MaxTrainerVideosCount - currentTrainerVideosCount)
+                        {
+                            foreach (var item in trainerVideos)
+                            {
+                                var videoName = item.Substring(32, item.Length - 32);
+                                var video = "https://www.youtube.com" + "/embed/" + videoName;
+                                var trainerVideo = new TrainerVideo
+                                {
+                                    VideoUrl = video,
+                                    TrainerId = trainer.Id
+                                };
+
+                                await dbContext.TrainerVideos.AddAsync(trainerVideo);
+                            }
+                        }
+                    }
+
+                    if (trainer.ShortBio != null && trainer.Bio != null && currentTrainerImagesCount > 0 && currentTrainerVideosCount > 0)
                     {
                         trainer.IsReadyToVisualize = true;
                         trainer.IsReadyToWrite = true;
@@ -255,7 +300,7 @@
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "AccountService: EditMyProfilForEdit");
+                Log.Error(ex, "AccountService: MyProfile POST");
                 return GlobalResponseData<bool>.BadResponse(GlobalConstants.Wrong);
             }
         }

@@ -2,6 +2,7 @@
 {
     using Body4U.Data.Models.Enums;
     using Microsoft.AspNetCore.Http;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
     public class EditMyProfileRequest
@@ -35,6 +36,10 @@
         [MaxLength(200, ErrorMessage = "Твърде много текст за кратка биография.")]
         public string ShortBio { get; set; }
 
+        public List<IFormFile> TrainerImages { get; set; }
+
+        public List<string> TrainerVideos { get; set; }
+
         [RegularExpression(@"(?:(?:http|https):\/\/)?(?:www.)?facebook.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[?\w\-]*\/)?(?:profile.php\?id=(?=\d.*))?([\w.\-]*)?", ErrorMessage = "Невалиден Facebook профил.")]
         public string FacebookUrl { get; set; }
 
@@ -45,5 +50,9 @@
         public string YoutubeChannelUrl { get; set; }
 
         public bool? IsReadyToWrite { get; set; }
+
+        public int TrainerImagesCount { get; set; }
+
+        public int TrainerVideosCount { get; set; }
     }
 }

@@ -3,6 +3,10 @@
 @using Body4U.Data.Models.Enums
 @using Body4U.Common
 
+@{ 
+    var temp = TempData["Success"];
+}
+
 <section class="d-flex align-items-center">
     <div class="wrapper d-flex align-items-stretch">
         <partial name="_MyProfilePartial" model="Model.Id" />
@@ -13,6 +17,10 @@
                     <span class="sr-only">Toggle Menu</span>
                 </button>
             </div>
+            @if (temp != null)
+            {
+                <p style="font-weight:bold; color:forestgreen">@temp.ToString()</p>
+            }
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <form asp-action="MyProfile" method="post" enctype="multipart/form-data">
                 <input hidden asp-for="Id" />
@@ -37,13 +45,13 @@
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="ProfilePicture">Профилна снимка</label>
-                    <input type="file" name="ProfilePicture" asp-for="ProfilePicture" class="form-control" id="profilePictureInput">
+                    <label asp-for="ProfilePicture" class="control-label">Профилна снимка</label>
+                    <input type="file" name="ProfilePicture" asp-for="ProfilePicture" id="profilePictureInput">
                     <span asp-validation-for="ProfilePicture" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Gender">Пол</label>
-                    <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()">
+                    <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()" style="border-radius: 0.25rem;">
                         <option selected="selected" value="">Избери</option>
                     </select>
                     <span asp-validation-for="Gender" class="text-danger" />
@@ -60,6 +68,26 @@
                         <textarea asp-for="ShortBio" class="form-control w-100" name="ShortBio" cols="15" rows="4" placeholder="" style="border-style:inset; border-width:2px;"></textarea>
                         <span asp-validation-for="ShortBio" class="text-danger"></span>
                     </div>
+                    @if (Model.TrainerImagesCount < GlobalConstants.MaxTrainerImagesCount)
+                    {
+                        <div class="form-group">
+                            <label asp-for="TrainerImages" class="control-label">Снимки</label>
+                            <input type="file" id="file" multiple asp-for="TrainerImages" />
+                            <span asp-validation-for="TrainerImages" class="text-danger"></span>
+                        </div>
+                    }
+                    @if (Model.TrainerVideosCount < GlobalConstants.MaxTrainerVideosCount)
+                    {
+
+                        @for (int i = 0; i < GlobalConstants.MaxTrainerVideosCount - Model.TrainerVideosCount; i++)
+                        {
+                            <div class="form-group">
+                                <label asp-for="TrainerVideos" class="control-label">Видео</label>
+                                <input asp-for="TrainerVideos" class="form-control" />
+                                <span asp-validation-for="TrainerVideos" class="text-danger"></span>
+                            </div>
+                        }
+                    }
                     <div class="form-group">
                         <label asp-for="FacebookUrl">Facebook линк</label>
                         <input name="FacebookUrl" asp-for="FacebookUrl" class="form-control" id="phoneNumberInput" placeholder="">
@@ -81,3 +109,14 @@
         </div>
     </div>
 </section>
+
+<script>
+    $(function () {
+        $("input[type='submit']").click(function () {
+            var $fileUpload = $("input[type='file']");
+            if (parseInt($fileUpload.get(0).files.length) > 2) {
+                alert("You can only upload a maximum of 2 files");
+            }
+        });
+    });
+</script>
