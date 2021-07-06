@@ -19,7 +19,7 @@
             </div>
             @if (temp != null)
             {
-                <p style="font-weight:bold; color:forestgreen">@temp.ToString()</p>
+                <p class="successMsg">@temp.ToString()</p>
             }
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <form asp-action="MyProfile" method="post" enctype="multipart/form-data">

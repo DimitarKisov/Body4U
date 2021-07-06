@@ -135,7 +135,7 @@
             }
         }
 
-        public async Task<GlobalResponseData<GetArticleResponse>> Get(int id, ApplicationUser currentlyLoggedInUser = null)
+        public async Task<GlobalResponseData<GetArticleResponse>> Get(int id)
         {
             try
             {
@@ -180,20 +180,20 @@
                     AuthorYoutubeChannel = trainer?.YoutubeChannelUrl ?? ""
                 };
 
-                var dic = new Dictionary<string, int>();
+                //var dic = new Dictionary<string, int>();
 
-                //Типовете статии и техния брой
-                foreach (var type in articles)
-                {
-                    var articleType = (type.ArticleType).ToString();
+                ////Типовете статии и техния брой
+                //foreach (var type in articles)
+                //{
+                //    var articleType = (type.ArticleType).ToString();
 
-                    if (!dic.ContainsKey(articleType))
-                    {
-                        dic[articleType] = 0;
-                    }
-                    dic[articleType]++;
-                }
-                result.ArticleTypesCount = dic;
+                //    if (!dic.ContainsKey(articleType))
+                //    {
+                //        dic[articleType] = 0;
+                //    }
+                //    dic[articleType]++;
+                //}
+                //result.ArticleTypesCount = dic;
 
                 return GlobalResponseData<GetArticleResponse>.CorrectResponse(result);
             }

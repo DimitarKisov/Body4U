@@ -26,7 +26,5 @@
         }
 
         public string DatePosted { get; set; }
-
-        public string ApplicationUserId { get; set; }
     }
 }

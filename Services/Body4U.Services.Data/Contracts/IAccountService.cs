@@ -19,11 +19,11 @@
 
         Task<GlobalResponseData<EditMyProfileRequest>> MyProfile(ApplicationUser user);
 
-        //GlobalResponseData<EditMyProfileRequest> EditMyProfile(ApplicationUser loggedInUser);
-
         Task<GlobalResponseData<bool>> MyProfile(EditMyProfileRequest model, ApplicationUser loggedInUser);
 
         Task<GlobalResponseData<List<MyArticlesViewModel>>> MyArticles(string userId, IGetClaimsProvider claimsProvider);
+
+        Task<GlobalResponseData<List<MyPhotosViewModel>>> MyPhotos(string userId, IGetClaimsProvider claimsProvider);
 
         Task<Response> SendEmailConfirmation(string email, string confirmationLink);
 

@@ -3,7 +3,6 @@
     using Body4U.Common;
     using Body4U.Data.ClaimsProvider;
     using Body4U.Data.Models;
-    using Body4U.Data.Models.Helper;
     using Body4U.Services.Data.Contracts;
     using Body4U.Web.ViewModels.Article;
     using Microsoft.AspNetCore.Authorization;
@@ -43,6 +42,25 @@
             var user = await userManager.GetUserAsync(User);
             var result = await articleService.Create(model, user);
 
+            if (!result.IsValid)
+            {
+                switch (result.Error.Message)
+                {
+                    case GlobalConstants.ArticleTitleExsists:
+                        ModelState.AddModelError(string.Empty, result.Error.Message);
+                        return View(model);
+                    case GlobalConstants.WrongImageFormat:
+                        ModelState.AddModelError(string.Empty, result.Error.Message);
+                        return View(model);
+                    case GlobalConstants.NotReadyToWriteArticle:
+                        ModelState.AddModelError(string.Empty, result.Error.Message);
+                        return View(model);
+                    case GlobalConstants.Wrong:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("HttpError");
+                }
+            }
+
             if (result.IsValid)
             {
                 return RedirectToAction("Get", "Article", new { result.Data.Id });
@@ -68,29 +86,18 @@
         [HttpGet]
         public async Task<IActionResult> Get(int id)
         {
-            GlobalResponseData<GetArticleResponse> result = null;
-            var currentlyLoggedInUser = await userManager.GetUserAsync(this.User);
-
-            if (currentlyLoggedInUser == null)
-            {
-                result = await articleService.Get(id);
-            }
-            else
-            {
-                result = await articleService.Get(id, currentlyLoggedInUser);
-            }
+            var result = await articleService.Get(id);
 
             if (!result.IsValid)
             {
-                if (result.Error.Message == GlobalConstants.ArticleMissing)
+                switch (result.Error.Message)
                 {
-                    ViewBag.ErrorMessage = result.Error.Message;
-                    return View("NotFound");
-                }
-                else if (result.Error.Message == GlobalConstants.Wrong)
-                {
-                    ViewBag.ErrorMessage = result.Error.Message;
-                    return View("HttpError");
+                    case GlobalConstants.ArticleMissing:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.Wrong:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("HttpError");
                 }
             }
 
@@ -159,34 +166,6 @@
             }
 
             return RedirectToAction("MyProfile", "Account");
-
-            //if (result.Error.Message == GlobalConstants.ArticleMissing)
-            //{
-            //    ViewBag.ErrorMessage = result.Error.Message;
-            //    return View("NotFound");
-            //}
-            //else if (result.Error.Message == GlobalConstants.WrongRights)
-            //{
-            //    ViewBag.ErrorMessage = result.Error.Message;
-            //    return View("WrongRights");
-            //}
-            //else if (result.Error.Message == GlobalConstants.NotFound)
-            //{
-            //    ViewBag.ErrorMessage = result.Error.Message;
-            //    return View("NotFound");
-            //}
-            //else if (result.Error.Message == GlobalConstants.WrongImageFormat)
-            //{
-            //    ViewBag.ErrorMessage = result.Error.Message;
-            //    return View("NotFound");
-            //}
-            //else if (result.Error.Message == GlobalConstants.Wrong)
-            //{
-            //    ViewBag.ErrorMessage = result.Error.Message;
-            //    return View("HttpError");
-            //}
-
-            //return RedirectToAction("MyProfile", "Account");
         }
 
         [Authorize(Roles = "Administrator, Trainer")]
@@ -194,21 +173,24 @@
         public async Task<IActionResult> Delete(int id)
         {
             var result = await articleService.Delete(id, claimsProvider);
-            
-            if (result.Error.Message == GlobalConstants.WrongRights)
+
+            if (!result.IsValid)
             {
-                ViewBag.ErrorMessage = result.Error.Message;
-                return View("WrongRights");
-            }
-            else if (result.Error.Message == GlobalConstants.NotFound)
-            {
-                ViewBag.ErrorMessage = result.Error.Message;
-                return View("NotFound");
-            }
-            else if (result.Error.Message == GlobalConstants.Wrong)
-            {
-                ViewBag.ErrorMessage = result.Error.Message;
-                return View("HttpError");
+                switch (result.Error.Message)
+                {
+                    case GlobalConstants.ArticleMissing:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.WrongRights:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("WrongRights");
+                    case GlobalConstants.NotFound:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.Wrong:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("HttpError");
+                }
             }
 
             return RedirectToAction("MyProfile", "Account");

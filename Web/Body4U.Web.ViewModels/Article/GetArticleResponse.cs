@@ -8,7 +8,7 @@
         private HtmlSanitizer sanitizer;
         public GetArticleResponse()
         {
-            RecentArticles = new List<GetRecentArticlesViewModel>();
+            //RecentArticles = new List<GetRecentArticlesViewModel>();
             sanitizer = new HtmlSanitizer();
             sanitizer.AllowedTags.Add("iframe");
         }
@@ -40,8 +40,8 @@
 
         public string AuthorYoutubeChannel { get; set; }
 
-        public Dictionary<string, int> ArticleTypesCount { get; set; }
+        //public Dictionary<string, int> ArticleTypesCount { get; set; }
 
-        public List<GetRecentArticlesViewModel> RecentArticles { get; set; }
+        //public List<GetRecentArticlesViewModel> RecentArticles { get; set; }
     }
 }

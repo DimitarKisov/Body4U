@@ -43,3 +43,25 @@
     border: none;
     padding: 0px;
 }
+
+.successMsg {
+    font-weight: bold;
+    color: forestgreen;
+}
+
+
+.img-collection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.img-item{
+    display:inline-flex;
+}
+
+.img-src {
+    flex: 0 0 calc(27.33% - 30px);
+    margin: 5px;
+    max-height: 357.36px;
+}

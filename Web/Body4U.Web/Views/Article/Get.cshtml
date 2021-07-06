@@ -6,7 +6,6 @@
 
 <section class="breadcrumbs">
     <div class="container">
-
         <ol>
             <li><a asp-area="" asp-controller="Home" asp-action="Index">Начало</a></li>
             <li><a asp-area="" asp-controller="Article" asp-action="All">Статии</a></li>
@@ -15,8 +14,7 @@
         <h2>@Model.Title</h2>
 
     </div>
-</section><!-- End Breadcrumbs -->
-<!-- ======= Blog Single Section ======= -->
+</section>
 <section id="blog" class="blog">
     <div class="container" data-aos="fade-up">
         <div class="row">
@@ -174,9 +172,9 @@
             <!--<h3 class="sidebar-title">Категории</h3>
             <div class="sidebar-item categories">
                 <ul>
-                    @foreach (var kvp in Model.ArticleTypesCount)
+                    <1@foreach (var kvp in Model.ArticleTypesCount)
                     {
-                        <li><a href="#">@Localizer[$"{kvp.Key}"]<span>(@kvp.Value)</span></a></li>
+                        <li><a href="#">1@Localizer[$"{kvp.Key}"]<span>(1@kvp.Value)</span></a></li>
                     }
 
                 </ul>
@@ -184,12 +182,12 @@
             <!-- End sidebar categories-->
             <!--<h3 class="sidebar-title">Последно добавени</h3>
             <div class="sidebar-item recent-posts">
-                @foreach (var item in Model.RecentArticles)
+                1@foreach (var item in Model.RecentArticles)
                 {
                     <div class="post-item clearfix">
-                        <img src="data:image;base64,@item.Image" alt="" class="img-fluid" alt="">
-                        <h4><a href="blog-single.html">@item.SubstringedTitle</a></h4>
-                        <time datetime="2020-01-01">@item.DatePosted</time>
+                        <img src="data:image;base64,1@item.Image" alt="" class="img-fluid" alt="">
+                        <h4><a href="blog-single.html">1@item.SubstringedTitle</a></h4>
+                        <time datetime="2020-01-01">1item.DatePosted</time>
                     </div>
                 }
             </div>-->
@@ -215,4 +213,4 @@
             <!--</div>--><!-- End blog sidebar -->
         </div>
     </div>
-</section><!-- End Blog Single Section -->
+</section>

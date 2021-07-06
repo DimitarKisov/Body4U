@@ -194,6 +194,7 @@
                         return View(model);
                 }
             }
+
             TempData["Success"] = "Успешно редактирахте вашия профил.";
             return RedirectToAction("MyProfile");
         }
@@ -203,6 +204,29 @@
         public async Task<IActionResult> MyArticles(string userId)
         {
             var result = await accountService.MyArticles(userId, claimsProvider);
+
+            if (!result.IsValid)
+            {
+                switch (result.Error.Message)
+                {
+                    case GlobalConstants.WrongRights:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("WrongRights");
+                    case GlobalConstants.NotFound:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("NotFound");
+                    case GlobalConstants.Wrong:
+                        ViewBag.ErrorMessage = result.Error.Message;
+                        return View("HttpError");
+                }
+            }
+
+            return View(result.Data);
+        }
+
+        public async Task<IActionResult> MyPhotos(string userId)
+        {
+            var result = await accountService.MyPhotos(userId, claimsProvider);
 
             if (!result.IsValid)
             {

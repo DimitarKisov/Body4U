@@ -341,6 +341,37 @@
             }
         }
 
+        public async Task<GlobalResponseData<List<MyPhotosViewModel>>> MyPhotos(string userId, IGetClaimsProvider claimsProvider)
+        {
+            try
+            {
+                if (userId != claimsProvider.UserId && claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
+                {
+                    return GlobalResponseData<List<MyPhotosViewModel>>.BadResponse(GlobalConstants.WrongRights);
+                }
+                else if (userId != claimsProvider.UserId && !claimsProvider.IsTrainer.HasValue && !claimsProvider.IsAdmin.HasValue)
+                {
+                    return GlobalResponseData<List<MyPhotosViewModel>>.BadResponse(GlobalConstants.NotFound);
+                }
+
+                var photos = await dbContext.TrainerImages
+                    .Where(x => x.Trainer.ApplicationUserId == userId)
+                    .Select(ti => new MyPhotosViewModel
+                    {
+                        Id = ti.Id,
+                        Photo = Convert.ToBase64String(ti.Image)
+                    })
+                    .ToListAsync();
+
+                return GlobalResponseData<List<MyPhotosViewModel>>.CorrectResponse(photos);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "AccountService: MyPhotos");
+                return GlobalResponseData<List<MyPhotosViewModel>>.BadResponse(GlobalConstants.Wrong);
+            }
+        }
+
         public async Task<Response> SendEmailConfirmation(string email, string confirmationLink)
         {
             var apiKey = configuration.GetSection("SendGrid")["ApiKey"];

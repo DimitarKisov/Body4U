@@ -19,11 +19,9 @@
                     <div class="card-body">
                         <h5 class="card-title" style="font-weight:bold">@article.ShortTitle</h5>
                         <p class="card-text">@article.ShortContent</p>
-                        @*<a href="#" class="btn btn-primary">Go somewhere</a>*@
                         <hr />
                         <a asp-area="" asp-controller="Article" asp-action="Get" asp-route-id="@article.Id"><i class="fas fa-eye card-icon" data-toggle="tooltip" title="Преглед"></i></a>
                         <a asp-area="" asp-controller="Article" asp-action="Edit" asp-route-id="@article.Id"><i class="fas fa-edit card-icon" data-toggle="tooltip" title="Редакция"></i></a>
-                        @*<a asp-area="" asp-controller="Article" asp-action="Delete" asp-route-id="@article.Id"></a>*@
                         <form asp-controller="Article" asp-action="Delete" asp-route-id="@article.Id" method="post" style="display:inline-block">
                             <button type="submit" class="card-btn">
                                 <i class="fas fa-trash-alt card-icon" data-toggle="tooltip" title="Изтрий"></i>
