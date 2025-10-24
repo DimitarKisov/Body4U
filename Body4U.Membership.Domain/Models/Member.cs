@@ -35,7 +35,7 @@ namespace Body4U.Membership.Domain.Models
 
         private Member() { }
 
-        public static Member Register(
+        public static Member Create(
             string firstName,
             string lastName,
             string email,
@@ -48,7 +48,7 @@ namespace Body4U.Membership.Domain.Models
             var memberId = Guid.NewGuid();
             var member = new Member(memberId, firstName, lastName, contactInfo, membershipLevel);
 
-            member.AddDomainEvent(new MemberRegistered(memberId, email, membershipLevel.Id));
+            member.AddDomainEvent(new MemberCreated(memberId, email, membershipLevel.Id));
 
             return member;
         }
