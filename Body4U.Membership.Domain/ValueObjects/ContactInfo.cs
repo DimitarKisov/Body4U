@@ -16,10 +16,7 @@ namespace Body4U.Membership.Domain.ValueObjects
 
         public static ContactInfo Create(string email, string phoneNumber)
         {
-            Guard.AgainstEmptyString<InvalidContactInfoException>(email, nameof(email));
-            Guard.AgainstNotContainingSpecialChars<InvalidContactInfoException>(email, "Invalid email format", "@");
-            Guard.AgainstEmptyString<InvalidContactInfoException>(phoneNumber, nameof(phoneNumber));
-
+            Validate(email, phoneNumber);
             return new ContactInfo(email, phoneNumber);
         }
 
@@ -27,6 +24,13 @@ namespace Body4U.Membership.Domain.ValueObjects
         {
             yield return Email;
             yield return PhoneNumber;
+        }
+
+        private static void Validate(string email, string phoneNumber)
+        {
+            Guard.AgainstEmptyString<InvalidContactInfoException>(email, nameof(email));
+            Guard.AgainstNotContainingSpecialChars<InvalidContactInfoException>(email, "Invalid email format", "@");
+            Guard.AgainstEmptyString<InvalidContactInfoException>(phoneNumber, nameof(phoneNumber));
         }
     }
 }

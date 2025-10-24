@@ -23,8 +23,6 @@ namespace Body4U.Membership.Domain.Models
         internal Member(Guid id, string firstName, string lastName, ContactInfo contactInfo, MembershipLevel membershipLevel)
             : base(id)
         {
-            Validate(firstName, lastName, contactInfo);
-
             FirstName = firstName;
             LastName = lastName;
             ContactInfo = contactInfo;
@@ -37,6 +35,24 @@ namespace Body4U.Membership.Domain.Models
 
         private Member() { }
 
+        public static Member Register(
+            string firstName,
+            string lastName,
+            string email,
+            string phoneNumber,
+            MembershipLevel membershipLevel)
+        {
+            var contactInfo = ContactInfo.Create(email, phoneNumber);
+            Validate(firstName, lastName, contactInfo);
+
+            var memberId = Guid.NewGuid();
+            var member = new Member(memberId, firstName, lastName, contactInfo, membershipLevel);
+
+            member.AddDomainEvent(new MemberRegistered(memberId, email, membershipLevel.Id));
+
+            return member;
+        }
+
         public void ChangeMembershipLevel(MembershipLevel newLevel)
         {
             if (MembershipLevel == newLevel)
@@ -47,28 +63,98 @@ namespace Body4U.Membership.Domain.Models
             var oldLevelId = MembershipLevel.Id;
 
             MembershipLevel = newLevel;
+
+            AddDomainEvent(new MembershipLevelChanged(Id, oldLevelId, newLevel.Id));
         }
 
-        private void Validate(string firstName, string lastName, ContactInfo contactInfo)
+        public bool CanBookClass()
+        {
+            if (!MembershipStatus.CanBook())
+            {
+                return false;
+            }
+
+            if (ExpirationDate.HasValue && ExpirationDate.Value < DateTime.UtcNow)
+            {
+                MembershipStatus = MembershipStatus.Expired;
+                return false;
+            }
+
+            return MembershipLevel.CanBookMoreClasses(CurrentMonthBookings);
+        }
+
+        public void RecordBooking()
+        {
+            if (!CanBookClass())
+            {
+                throw new InvalidMemberException("Member cannot book more classes.");
+            }
+
+            CurrentMonthBookings++;
+            LoyaltyPoints += 10;
+        }
+
+        public void ResetMonthlyBookings()
+        {
+            CurrentMonthBookings = 0;
+        }
+
+        public void Suspend(string reason)
+        {
+            if (MembershipStatus == MembershipStatus.Cancelled)
+            {
+                throw new InvalidMemberException("Cannot suspend cancelled membership");
+            }
+
+            MembershipStatus = MembershipStatus.Suspended;
+        }
+
+        public void Reactivate()
+        {
+            if (!MembershipStatus.CanRenew())
+            {
+                throw new InvalidMemberException("Cannot reactivate this membership");
+            }
+
+            MembershipStatus = MembershipStatus.Active;
+            ExpirationDate = DateTime.UtcNow.AddMonths(1);
+        }
+
+        public void Cancel()
+        {
+            MembershipStatus = MembershipStatus.Cancelled;
+        }
+
+        public int GetWaitlistPriority()
+        {
+            return MembershipLevel.GetWaitlistPriority() + (LoyaltyPoints / 100);
+        }
+
+        public string GetFullName()
+        {
+            return $"{FirstName} {LastName}";
+        }
+
+        private static void Validate(string firstName, string lastName, ContactInfo contactInfo)
         {
             ValidateFirstName(firstName);
             ValidateLastName(lastName);
             ValidateContactInfo(contactInfo);
         }
 
-        private void ValidateFirstName(string firstName)
+        private static void ValidateFirstName(string firstName)
         {
             Guard.AgainstEmptyString<InvalidMemberException>(firstName, nameof(firstName));
             Guard.ForStringLength<InvalidMemberException>(firstName, MinNameLength, MaxNameLength, nameof(firstName));
         }
 
-        private void ValidateLastName(string lastName)
+        private static void ValidateLastName(string lastName)
         {
             Guard.AgainstEmptyString<InvalidMemberException>(lastName, nameof(lastName));
             Guard.ForStringLength<InvalidMemberException>(lastName, MinNameLength, MaxNameLength, nameof(lastName));
         }
 
-        private void ValidateContactInfo(ContactInfo contactInfo)
+        private static void ValidateContactInfo(ContactInfo contactInfo)
         {
             Guard.AgainstEmptyString<InvalidMemberException>(contactInfo.Email, nameof(contactInfo.Email));
             Guard.AgainstNotContainingSpecialChars<InvalidMemberException>(contactInfo.Email, "Invalid email format", "@");
