@@ -1,12 +1,10 @@
 ﻿using Body4U.Membership.Domain.Enumerations;
 using Body4U.Membership.Domain.Models;
-using Body4U.Membership.Domain.ValueObjects;
 using Body4U.SharedKernel.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Numerics;
 
-namespace Body4U.Membership.Infrastructure.Persistance.Configurations
+namespace Body4U.Membership.Infrastructure.Persistence.Configurations
 {
     internal class MemberConfiguration : IEntityTypeConfiguration<Member>
     {

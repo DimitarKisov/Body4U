@@ -4,7 +4,7 @@ using Body4U.Membership.Domain.Models;
 using Body4U.SharedKernel.Domain;
 using MediatR;
 
-namespace Body4U.Membership.Application.Commands
+namespace Body4U.Membership.Application.Commands.CreateMember
 {
     public class CreateMemberCommand : IRequest<Guid>
     {

@@ -1,4 +1,4 @@
-﻿using Body4U.Membership.Application.Commands;
+﻿using Body4U.Membership.Application.Commands.CreateMember;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Body4U.Membership.Api.Controllers

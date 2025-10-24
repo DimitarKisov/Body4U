@@ -1,9 +1,9 @@
 ﻿using Body4U.Membership.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Body4U.Membership.Infrastructure.Persistance
+namespace Body4U.Membership.Infrastructure.Persistence
 {
-    internal class MembershipDbContext : DbContext
+    public class MembershipDbContext : DbContext
     {
         public MembershipDbContext(DbContextOptions<MembershipDbContext> options)
             : base(options)

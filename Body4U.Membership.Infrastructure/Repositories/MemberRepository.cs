@@ -1,6 +1,6 @@
 ﻿using Body4U.Membership.Application.Repositories;
 using Body4U.Membership.Domain.Models;
-using Body4U.Membership.Infrastructure.Persistance;
+using Body4U.Membership.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Body4U.Membership.Infrastructure.Repositories

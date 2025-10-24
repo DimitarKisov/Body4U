@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Body4U.Membership.Application\Body4U.Membership.Application.csproj" />
+    <ProjectReference Include="..\Body4U.Membership.Infrastructure\Body4U.Membership.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
