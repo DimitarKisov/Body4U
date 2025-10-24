@@ -44,7 +44,7 @@ namespace Body4U.Membership.Application.Commands
                     request.PhoneNumber,
                     membershipLevel);
 
-                await _memberRepository.AddAsync(member, cancellationToken);
+                _memberRepository.Add(member);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return member.Id;

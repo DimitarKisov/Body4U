@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Body4U.Membership.Domain", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Body4U.Membership.Application", "Body4U.Membership.Application\Body4U.Membership.Application.csproj", "{1DFBC188-A283-4EFB-A8A8-46F49FC74EFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Body4U.Membership.Infrastructure", "Body4U.Membership.Infrastructure\Body4U.Membership.Infrastructure.csproj", "{846206CE-87DA-4740-A9CF-612A2D29858E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{1DFBC188-A283-4EFB-A8A8-46F49FC74EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DFBC188-A283-4EFB-A8A8-46F49FC74EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DFBC188-A283-4EFB-A8A8-46F49FC74EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{846206CE-87DA-4740-A9CF-612A2D29858E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{846206CE-87DA-4740-A9CF-612A2D29858E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{846206CE-87DA-4740-A9CF-612A2D29858E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{846206CE-87DA-4740-A9CF-612A2D29858E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{4E769D46-E55C-40A8-A5E2-4D3B0D46467F} = {08F02AA3-0D58-4855-B042-B0F17354DCAB}
 		{2DFE1A78-35DE-4E8C-8CF8-11FAB2CF4847} = {4E769D46-E55C-40A8-A5E2-4D3B0D46467F}
 		{1DFBC188-A283-4EFB-A8A8-46F49FC74EFB} = {4E769D46-E55C-40A8-A5E2-4D3B0D46467F}
+		{846206CE-87DA-4740-A9CF-612A2D29858E} = {4E769D46-E55C-40A8-A5E2-4D3B0D46467F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {14D8401C-5EA1-4ADA-8E66-9E9BED4E5E77}
