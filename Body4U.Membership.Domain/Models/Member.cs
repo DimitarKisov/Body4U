@@ -4,7 +4,7 @@ using Body4U.Membership.Domain.Exceptions;
 using Body4U.Membership.Domain.ValueObjects;
 using Body4U.SharedKernel.Domain;
 
-using static Body4U.Membership.Domain.Constants.ModelConstants.Member;
+using static Body4U.Membership.Domain.Constants.ModelConstants.MemberConstants;
 
 namespace Body4U.Membership.Domain.Models
 {

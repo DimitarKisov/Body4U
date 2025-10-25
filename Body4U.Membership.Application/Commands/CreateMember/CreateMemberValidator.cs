@@ -2,7 +2,7 @@
 {
     using FluentValidation;
 
-    using static Domain.Constants.ModelConstants.Member;
+    using static Domain.Constants.ModelConstants.MemberConstants;
 
     internal class CreateMemberValidator : AbstractValidator<CreateMemberCommand>
     {
