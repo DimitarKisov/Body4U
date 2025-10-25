@@ -1,10 +1,10 @@
-﻿using Body4U.Membership.Application.Commands.CreateMember;
-using Body4U.Membership.Application.Queries.GetMemberById;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Body4U.Membership.Api.Controllers
+﻿namespace Body4U.Membership.Api.Controllers
 {
+    using Body4U.Membership.Application.Commands.CreateMember;
+    using Body4U.Membership.Application.Queries.GetMemberById;
+    using MediatR;
+    using Microsoft.AspNetCore.Mvc;
+
     [ApiController]
     [Route("api/[controller]")]
     public class MembersController : ControllerBase
@@ -21,7 +21,7 @@ namespace Body4U.Membership.Api.Controllers
         public async Task<ActionResult<Guid>> Create(CreateMemberCommand command)
         {
             var id =  await _mediator.Send(command);
-            return CreatedAtAction("Get", new { id }, id);
+            return CreatedAtAction(nameof(GetMember), new { id }, id);
         }
 
         [HttpGet("{id}")]

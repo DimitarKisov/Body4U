@@ -1,11 +1,11 @@
-﻿using Body4U.Membership.Application.Repositories;
-using Body4U.Membership.Domain.Enumerations;
-using Body4U.Membership.Domain.Models;
-using Body4U.SharedKernel.Domain;
-using MediatR;
-
-namespace Body4U.Membership.Application.Commands.CreateMember
+﻿namespace Body4U.Membership.Application.Commands.CreateMember
 {
+    using Body4U.Membership.Application.Repositories;
+    using Body4U.Membership.Domain.Enumerations;
+    using Body4U.Membership.Domain.Models;
+    using Body4U.SharedKernel.Domain;
+    using MediatR;
+
     public class CreateMemberCommand : IRequest<Guid>
     {
         public string FirstName { get; set; }
@@ -45,7 +45,15 @@ namespace Body4U.Membership.Application.Commands.CreateMember
                     membershipLevel);
 
                 _memberRepository.Add(member);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                try
+                {
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
 
                 return member.Id;
             }

@@ -1,13 +1,13 @@
-﻿using Body4U.Membership.Domain.Enumerations;
-using Body4U.Membership.Domain.Events;
-using Body4U.Membership.Domain.Exceptions;
-using Body4U.Membership.Domain.ValueObjects;
-using Body4U.SharedKernel.Domain;
-
-using static Body4U.Membership.Domain.Constants.ModelConstants.MemberConstants;
-
-namespace Body4U.Membership.Domain.Models
+﻿namespace Body4U.Membership.Domain.Models
 {
+    using Body4U.Membership.Domain.Enumerations;
+    using Body4U.Membership.Domain.Events;
+    using Body4U.Membership.Domain.Exceptions;
+    using Body4U.Membership.Domain.ValueObjects;
+    using Body4U.SharedKernel.Domain;
+
+    using static Body4U.Membership.Domain.Constants.ModelConstants.MemberConstants;
+
     public class Member : Entity<Guid>, IAggregateRoot
     {
         public string FirstName { get; private set; }
@@ -27,6 +27,7 @@ namespace Body4U.Membership.Domain.Models
             LastName = lastName;
             ContactInfo = contactInfo;
             MembershipLevel = membershipLevel;
+            MembershipStatus = MembershipStatus.Active;
             DateJoined = DateTime.UtcNow;
             ExpirationDate = DateTime.UtcNow.AddMonths(1);
             LoyaltyPoints = 0;
