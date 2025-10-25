@@ -1,43 +1,19 @@
+using Body4U.Membership.Api.Extensions;
 using Body4U.Membership.Api.Middleware;
-using Body4U.Membership.Application.Behaviors;
+using Body4U.Membership.Application;
 using Body4U.Membership.Infrastructure;
-using Body4U.Membership.Infrastructure.Persistence;
-using Body4U.SharedKernel.Domain;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-// Add services to the container
-services.AddControllers();
-services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+services
+    .AddApplication()
+    .AddInfrastructure(configuration)
+    .AddControllers();
 
-// Database
-services.AddDbContext<MembershipDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        x => x.MigrationsAssembly("Body4U.Membership.Infrastructure")
-    )
-);
-
-// MediatR
-services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(IUnitOfWork).Assembly);
-    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-});
-
-// FluentValidation
-services.AddValidatorsFromAssembly(typeof(IUnitOfWork).Assembly);
-
-// Repositories
-services.AddInfrastructure(configuration);
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+services.AddEndpointsApiExplorer()
+    .ConfigureSwagger();
 
 var app = builder.Build();
 
