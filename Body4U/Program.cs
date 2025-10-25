@@ -1,5 +1,5 @@
+using Body4U.Membership.Api.Middleware;
 using Body4U.Membership.Application.Behaviors;
-using Body4U.Membership.Application.Repositories;
 using Body4U.Membership.Infrastructure;
 using Body4U.Membership.Infrastructure.Persistence;
 using Body4U.SharedKernel.Domain;
@@ -18,7 +18,7 @@ services.AddSwaggerGen();
 // Database
 services.AddDbContext<MembershipDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("MembershipDb"),
+        builder.Configuration.GetConnectionString("DefaultConnection"),
         x => x.MigrationsAssembly("Body4U.Membership.Infrastructure")
     )
 );
@@ -40,6 +40,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionHandler>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

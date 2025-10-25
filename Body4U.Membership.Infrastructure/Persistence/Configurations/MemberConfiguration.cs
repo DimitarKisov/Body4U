@@ -46,6 +46,11 @@ namespace Body4U.Membership.Infrastructure.Persistence.Configurations
                     .HasColumnName("PhoneNumber")
                     .HasMaxLength(20)
                     .IsRequired();
+
+                // Index
+                contact.HasIndex(x => x.Email)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Members_Email");
             });
 
             // Enumeration conversions
@@ -63,10 +68,6 @@ namespace Body4U.Membership.Infrastructure.Persistence.Configurations
 
             // Ignore domain events
             builder.Ignore(x => x.DomainEvents);
-
-            // Index
-            builder.HasIndex(x => x.ContactInfo.Email)
-                .IsUnique();
         }
     }
 }
